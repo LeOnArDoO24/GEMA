@@ -142,7 +142,7 @@
         <article class="card"><span class="n">03</span><h4>[TITOLO]</h4><p>[DESCRIZIONE BREVE]</p></article>
       </div>
       <footer>
-        Modello 3D “MacBook Pro M3 16 inch 2024” di <a href="https://sketchfab.com/jackbaeten">jackbaeten</a> su Sketchfab, con licenza <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Modificato: modello compresso e contenuto dello schermo sostituito.
+        Modello 3D “MacBook Pro M3 16 inch 2024” di <a href="https://sketchfab.com/jackbaeten">jackbaeten</a> su Sketchfab, con licenza <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Modificato: modello compresso, contenuto dello schermo e logo sul retro sostituiti.
       </footer>
     </div>
   </section>
@@ -282,6 +282,50 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawScreen);
   setInterval(function () { caretOn = !caretOn; drawScreen(); }, 530);
 
+
+  // Logo GEMA cromato (variante 02 "Blu anodizzato") sul retro del coperchio
+  var GEMA_PATHS = [
+    'M32.2579 36.5333C44.5345 36.205 58.1788 36.498 70.5433 36.4938L144.723 36.4677H179.212C185.351 36.4694 195.809 36.049 201.552 37.2438C203.116 39.0794 201.558 98.4341 201.552 104.099C192.032 104.099 185.646 104.099 176.926 104.099C163.72 104.099 155.797 104.099 145.245 104.099C145.305 96.9824 145.277 89.8651 145.16 82.7487C138.297 82.3615 129.333 82.6057 122.343 82.6036C110.964 82.5229 99.5846 82.5649 88.2064 82.7298C87.4387 109.519 88.5722 136.793 88.0874 163.627C87.9583 170.765 87.8995 178.589 88.2497 185.674C105.775 186.317 127.478 185.783 145.168 185.682C145.276 177.639 145.29 169.592 145.209 161.55C134.571 165.615 124.566 170.913 113.544 174.28L113.537 155.656L113.496 129.216C131.247 129.216 183.504 129.216 202.364 129.216C202.364 134.587 202.364 129.385 202.364 135.455C202.364 139.682 202.364 135.896 202.364 139.815C202.946 159.044 202.087 179.674 202.46 199.039C202.556 203.974 202.712 227.446 201.882 230.923C197.789 231.852 185.031 231.562 180.08 231.566H140.632L69.6991 231.558C58.6997 231.558 43.5693 232.004 32.8326 231.449C32.1141 231.016 31.3612 230.671 31.3149 229.624C31.143 225.769 31.2191 220.9 31.2182 217.091L31.2123 180.809L31.2106 88.5896C31.2115 72.6288 31.1757 56.6138 31.2598 40.6522C31.2695 38.8301 31.3485 38.0481 32.2579 36.5333Z',
+    'M224.756 36.517L345.117 36.4745L375.364 36.4813C380.262 36.4834 390.109 36.176 394.356 37.1274C396.568 42.0632 394.11 73.8607 395.005 81.4997C395.101 82.3187 394.717 84.0373 394.173 84.7853C390.001 85.627 368.766 85.2881 363.641 85.2881L311.427 85.283C301.621 85.2826 290.832 85.0623 281.088 85.4352C280.567 89.7075 280.765 105.004 281.079 109.545C288.868 109.948 299.279 109.651 307.218 109.651L357.312 109.623C361.272 109.621 381.747 108.978 384.335 110.736C385.285 113.599 385.433 154.066 384.185 157.106C381.059 158.821 318.448 157.964 309.444 157.96C299.997 157.905 290.55 157.934 281.104 158.048C280.461 163.908 280.868 176.26 281.07 182.424C289.118 182.97 301.582 182.571 310.071 182.567L365.253 182.529C372.04 182.525 388.765 182.121 394.935 182.945C395.41 193.842 394.79 205.168 395.047 216.112C395.11 218.782 395.494 229.83 393.893 231.142C390.858 231.768 384.538 231.575 381.179 231.575H361.559L284.031 231.562L244.61 231.592C238.522 231.604 231.673 231.798 225.611 231.339C224.353 231.247 224.425 231.037 223.909 230.297C223.127 223.356 223.49 210.491 223.488 202.999L223.484 154.121L223.49 78.8599C223.492 65.9316 223.427 52.8894 223.59 39.9594C223.611 38.3387 223.804 37.7472 224.756 36.517Z',
+    'M417.979 36.5213C435.788 36.0685 455.745 36.4911 473.722 36.5163C476.85 41.27 480.466 47.9672 483.333 52.9744C489.757 64.3989 496.324 75.7397 503.042 86.993C512.413 70.5534 522.407 52.5754 532.173 36.4957L568.005 36.4734C572.693 36.4721 583.287 36.214 587.504 36.8787C588.24 37.5165 588.631 38.0294 588.669 39.167C588.892 45.6003 588.799 52.5246 588.799 58.9334L588.808 101.485L588.824 182.083C588.824 187.666 589.451 228.38 587.799 230.797C584.885 231.886 535.41 232.058 532.417 230.89C530.512 228.43 531.294 195.587 531.307 190.08L531.248 132.165C521.688 148.185 512.598 165.443 503.072 181.751C501.663 179.725 500.398 177.404 499.115 175.277C490.535 161.041 482.921 145.992 474.34 131.796C474.832 160.945 474.239 190.227 474.47 219.387C474.5 222.7 474.567 226.168 474.079 229.359C473.966 230.108 473.991 230.558 473.314 230.885C472.104 231.47 470.905 231.491 469.594 231.579C462.505 231.096 422.158 232.428 417.811 230.911C416.709 225.231 417.071 213.598 417.066 207.262L417.075 167.94L417.054 84.8699C417.058 78.5821 416.486 39.933 417.979 36.5213Z',
+    'M667.922 36.5157C686.803 36.2769 706.181 36.4879 725.099 36.4782C731.944 49.2253 739.024 64.2322 745.54 77.2862L783.21 152.645C782.793 153.335 782.348 154.003 781.873 154.655C770.067 170.555 743.005 178.009 724.09 181.112C691.47 185.863 630.219 182.617 610.085 152.54C612.608 146.848 615.627 140.893 618.469 135.333C635.201 102.581 650.938 69.1183 667.922 36.5157Z',
+    'M667.923 195.318C686.804 195.08 706.181 195.291 725.1 195.281C731.843 207.84 738.816 222.592 745.253 235.51H647.626C654.286 222.041 661 208.608 667.923 195.318Z'
+  ];
+  var GEMA_HOLE = 'M696.174 84.686C698.141 86.9428 714.365 126.746 717.514 134.008L697.49 134.001L675.393 133.973L696.174 84.686Z';
+  var LOGO = { larghezza: 0.46, velocita: 7 }; // larghezza rispetto al coperchio; secondi per un passaggio di riflessi
+  var lc = document.createElement('canvas'); lc.width = 1666; lc.height = 536;
+  var lctx = lc.getContext('2d');
+  var logoTex = new THREE.CanvasTexture(lc);
+  logoTex.encoding = THREE.sRGBEncoding;
+  logoTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  var gemaPath = new Path2D(), gemaHole = new Path2D(GEMA_HOLE);
+  GEMA_PATHS.forEach(function (d) { gemaPath.addPath(new Path2D(d)); });
+  var CHROME = [[0, '#eef1ff'], [0.25, '#a9b8ff'], [0.46, '#536BE1'], [0.5, '#18215a'], [0.54, '#8296f6'], [0.76, '#d4dcff'], [1, '#6b80ea']];
+  function drawLogo(ts) {
+    var c = lctx, S = lc.width / 833;
+    c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, lc.width, lc.height);
+    c.setTransform(S, 0, 0, S, 0, 0);
+    // bordo scuro sotto le lettere (spessore)
+    c.save(); c.translate(0, 5); c.fillStyle = '#0f1640'; c.fill(gemaPath); c.restore();
+    // cromatura: bande diagonali che scorrono, ripetute a specchio
+    var L = 355, d = ((ts / LOGO.velocita) * 2 * L) % (2 * L);
+    var ux = 233 / L, uy = 268 / L;
+    var x0 = 300 + ux * (d - 2 * L), y0 = uy * (d - 2 * L);
+    var gr = c.createLinearGradient(x0, y0, x0 + ux * 4 * L, y0 + uy * 4 * L);
+    for (var k = 0; k < 4; k++) CHROME.forEach(function (st) {
+      var o = k % 2 ? 1 - st[0] : st[0]; gr.addColorStop((k + o) / 4, st[1]);
+    });
+    c.fillStyle = gr; c.fill(gemaPath);
+    // filo di luce in alto
+    var rim = c.createLinearGradient(0, 36, 0, 236);
+    rim.addColorStop(0, 'rgba(255,255,255,0.9)'); rim.addColorStop(0.35, 'rgba(255,255,255,0.15)'); rim.addColorStop(1, 'rgba(255,255,255,0)');
+    c.lineWidth = 1.6; c.strokeStyle = rim; c.stroke(gemaPath);
+    // foro della A trasparente
+    c.globalCompositeOperation = 'destination-out'; c.fill(gemaHole); c.globalCompositeOperation = 'source-over';
+    logoTex.needsUpdate = true;
+  }
+  drawLogo(0);
+
   var pivot = new THREE.Group(); scene.add(pivot);
   var rig = null;
 
@@ -300,6 +344,7 @@
     });
     var box = new THREE.Box3().setFromObject(model);
     model.position.sub(box.getCenter(new THREE.Vector3()));
+    pivot.quaternion.identity(); // misure prese con il modello in posizione di riposo
     pivot.add(model); pivot.updateMatrixWorld(true);
     box.setFromObject(model);
     var size = box.getSize(new THREE.Vector3());
@@ -327,11 +372,33 @@
     var front = new THREE.Vector3(n.x, 0, n.z); if (front.lengthSq() < 1e-6) front.set(0, 0, 1); front.normalize();
     var dir0 = front.clone().add(new THREE.Vector3(0, 0.42, 0)).normalize();
     rig = { radius: radius, sCenter: sCenter, sW: sW, sH: sH, n: n, v: v, dir0: dir0 };
+
+    // Logo sul retro del coperchio: trova la superficie posteriore con un raggio da dietro
+    var meshes = []; model.traverse(function (o) { if (o.isMesh && o !== screenMesh) meshes.push(o); });
+    var ray = new THREE.Raycaster(sCenter.clone().addScaledVector(n, -radius * 2), n.clone());
+    var hit = ray.intersectObjects(meshes, false)[0];
+    if (hit) {
+      var lw = sW * LOGO.larghezza, lh = lw * 268 / 833;
+      // nasconde i piccoli elementi al centro del retro (il logo Apple)
+      var bb = new THREE.Box3(), bs = new THREE.Vector3(), bcn = new THREE.Vector3();
+      meshes.forEach(function (o) {
+        bb.setFromObject(o); bb.getSize(bs); bb.getCenter(bcn);
+        var big = Math.max(bs.x, bs.y, bs.z);
+        var off = bcn.clone().sub(hit.point);
+        if (big < sW * 0.25 && Math.abs(off.dot(n)) < radius * 0.05 && off.length() < sW * 0.2) o.visible = false;
+      });
+      var logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(lw, lh), new THREE.MeshBasicMaterial({ map: logoTex, transparent: true, toneMapped: false, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4 }));
+      var bx = u.clone().negate(), bz = n.clone().negate();
+      logoMesh.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(bx, v, bz));
+      logoMesh.position.copy(hit.point).addScaledVector(n, -radius * 0.002);
+      logoMesh.renderOrder = 2;
+      pivot.add(logoMesh);
+    }
     $('loading').hidden = true;
   }, undefined, function () { $('loading').hidden = true; $('failed').hidden = false; });
 
   // Loop
-  var angle = 0, last = performance.now(), lastW = 0, lastH = 0;
+  var angle = 0, last = performance.now(), lastW = 0, lastH = 0, lastLogo = 0;
   var qTumble = new THREE.Quaternion(), qRest = new THREE.Quaternion();
   var spinAxis = new THREE.Vector3(0.55, 1, 0.2).normalize(); // asse inclinato: rotazione costante con capriole
   var tmpDir = new THREE.Vector3(), tmpTarget = new THREE.Vector3(), up0 = new THREE.Vector3(0, 1, 0), tmpUp = new THREE.Vector3();
@@ -365,6 +432,7 @@
       camera.up.copy(tmpUp.copy(up0).lerp(rig.v, tc).normalize());
       camera.lookAt(tmpTarget);
     }
+    if (!reduce && now - lastLogo > 33) { drawLogo(now / 1000); lastLogo = now; }
     renderer.render(scene, camera);
 
     // 3. Testi e passaggio "Sei dentro"

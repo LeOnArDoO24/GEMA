@@ -25,6 +25,8 @@ All'inizio dello script in `index.html` c'è l'oggetto `CONFIG`:
 | `accent` | colore hex | Schermo, bottoni e glifi |
 | `spinSpeed` | gradi al secondo | Velocità di rotazione |
 
+Subito dopo c'è `LOGO`, per il logo GEMA cromato sul retro del coperchio: `larghezza` (frazione della larghezza del coperchio, 0.46) e `velocita` (secondi per un passaggio dei riflessi diagonali, 7).
+
 ## File
 
 - `index.html`: pagina, stili e animazione
@@ -33,5 +35,5 @@ All'inizio dello script in `index.html` c'è l'oggetto `CONFIG`:
 
 ## Crediti
 
-- Modello 3D "MacBook Pro M3 16 inch 2024" di [jackbaeten](https://sketchfab.com/jackbaeten) su Sketchfab, con licenza [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Modifiche: modello compresso (quantizzazione e texture WebP) e contenuto dello schermo sostituito.
+- Modello 3D "MacBook Pro M3 16 inch 2024" di [jackbaeten](https://sketchfab.com/jackbaeten) su Sketchfab, con licenza [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Modifiche: modello compresso (quantizzazione e texture WebP) e contenuto dello schermo sostituito, logo sul retro sostituito con il logo GEMA.
 - Sfondo "Glow" esportato dal Gradient Builder di 21st.dev. Sfondo "Glow Horizon" ricostruito in CSS dal componente fornito.
