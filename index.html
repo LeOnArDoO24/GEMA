@@ -5,382 +5,557 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GEMA — Entra nel computer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
-  :root { --accent: #6EF2C4; --ink: #F2F4F7; --nav-ink: #F2F4F7; --nav-link: #C9CED8; --kicker: #B9C5F6; --hint: #A3AAC2; --hint-track: rgba(242,244,247,0.15); --stage-bg: #000; }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; background: #0A0B0F; color: #F2F4F7; font-family: Inter, system-ui, sans-serif; }
-  a { color: var(--accent); } a:hover { color: #A8F8DC; }
-  .grid-bg { background-color: #04140F; background-image: linear-gradient(rgba(110,242,196,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(110,242,196,0.07) 1px, transparent 1px); background-size: 56px 56px; }
-  .track { position: relative; height: 3800px; }
-  .stage { position: sticky; top: 0; height: 100vh; overflow: hidden; background: var(--stage-bg); }
-  .layer { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  [hidden] { display: none !important; }
-
-  /* Sfondo "Glow Horizon" */
-  @keyframes ghEnterTop { from { transform: translateY(-100%) scaleY(1.5); opacity: 0; filter: blur(15px) } to { transform: translateY(-50%) scaleY(1); opacity: 1; filter: blur(0) } }
-  @keyframes ghEnterBottom { from { transform: translateY(100%) scaleY(1.5); opacity: 0; filter: blur(15px) } to { transform: translateY(50%) scaleY(1); opacity: 1; filter: blur(0) } }
-  @keyframes ghArcTop { from { transform: translateY(-40%) scale(var(--s)) } to { transform: translateY(0) scale(var(--s)) } }
-  @keyframes ghArcBottom { from { transform: translateY(40%) scale(var(--s)) } to { transform: translateY(0) scale(var(--s)) } }
-  .gh { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-  .gh-wrap { position: absolute; inset: 0; isolation: isolate; }
-  .gh-top .gh-wrap { transform: translateY(-50%); animation: ghEnterTop 2s cubic-bezier(.16,1,.3,1) both; }
-  .gh-bottom .gh-wrap { transform: translateY(50%); animation: ghEnterBottom 2s cubic-bezier(.16,1,.3,1) both; }
-  .gh-top .gh-move { animation: ghArcTop 2s cubic-bezier(.16,1,.3,1) both; }
-  .gh-bottom .gh-move { animation: ghArcBottom 2s cubic-bezier(.16,1,.3,1) both; }
-  .arc { position: absolute; inset: 0; border-radius: 100%; transform: scale(var(--s)); }
-  .arc-white { --s: 1.32; background: #FFFFFF; box-shadow: 0px -4px 23px 0px #ffffffb5; animation-delay: 1.2s; }
-  .gh-bottom .arc-white { box-shadow: 0px 4px 23px 0px #ffffffb5; }
-  .arc-glow { --s: 1.2; background: #536BE1; filter: blur(31px); animation-delay: .6s; }
-  .arc-deep { --s: 1.24; background: #2E43B0; filter: blur(21px); }
-  .arc-black { --s: 1.2; background: #000; filter: blur(51px); }
-
-  /* Sfondo "Glow" (21st.dev Gradient Builder) */
-  .grad { position: absolute; inset: 0; z-index: 0; overflow: hidden; background-color: #F7F4EC;
-    background-image: radial-gradient(100% 50% at 50% 70%, #d8586a 0.0%, #D0384E 20.4%, #E8B5BD 41.1%, #B1C2DE 61.8%, #2C5FB3 82.5%, rgba(44,95,179,0) 85.3%), radial-gradient(42% 19% at 50% 70%, rgba(224,126,140,0.396) 0%, rgba(208,56,78,0.154) 38%, rgba(208,56,78,0) 72%), radial-gradient(53% 29% at 50% 70%, rgba(232,181,189,0.143) 0%, rgba(232,181,189,0) 80%); }
-  .grad svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .21; mix-blend-mode: overlay; }
-
-  header { position: absolute; top: 0; left: 0; right: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 24px clamp(20px, 4vw, 56px); }
-  .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.08em; color: var(--nav-ink); text-decoration: none; }
-  nav { display: flex; gap: 28px; flex-wrap: wrap; font-size: 14px; }
-  nav a { color: var(--nav-link); text-decoration: none; }
-  .hero-text { position: absolute; left: 0; right: 0; top: 12%; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 0 24px; text-align: center; pointer-events: none; }
-  .kicker { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--kicker); }
-  h1 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(40px, 5.4vw, 80px); line-height: .98; letter-spacing: -0.035em; max-width: 20ch; color: var(--ink); }
-  .status { position: absolute; left: 0; right: 0; top: 62%; z-index: 6; margin: 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--hint); }
-  .status.err { color: #FFB86B; text-transform: none; letter-spacing: 0; }
-  .hint { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--hint); }
-  .hint-line { position: relative; display: block; width: 1px; height: 44px; overflow: hidden; background: var(--hint-track); }
-  .hint-line span { position: absolute; inset: 0; background: var(--ink); animation: hintRun 1.6s cubic-bezier(.6,0,.4,1) infinite; }
-  @keyframes hintRun { 0% { transform: translateY(-100%) } 100% { transform: translateY(100%) } }
-  @keyframes caretBlink { 0%,49% { opacity: 1 } 50%,100% { opacity: 0 } }
-  @keyframes loadPulse { 0%,100% { opacity: .35 } 50% { opacity: 1 } }
-  .caret { animation: caretBlink 1s steps(1) infinite; }
-  .load-pulse { animation: loadPulse 1.4s ease-in-out infinite; }
-
-  .inside { position: absolute; inset: 0; z-index: 20; opacity: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; padding: 96px 24px; box-shadow: inset 0 0 220px rgba(110,242,196,0.16); }
-  .inside-inner { display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; max-width: 820px; }
-  .mono { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 16px; color: var(--accent); }
-  h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(56px, 10vw, 148px); line-height: .92; letter-spacing: -0.045em; color: #F2F4F7; }
-  .sub { margin: 0; font-size: clamp(16px, 1.5vw, 20px); line-height: 1.55; color: #B7C2BE; max-width: 52ch; }
-  .ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px; }
-  .btn { display: inline-flex; align-items: center; min-height: 48px; padding: 0 26px; border-radius: 999px; font-weight: 500; font-size: 15px; text-decoration: none; }
-  .btn-primary { background: var(--accent); color: #04140F; }
-  .btn-ghost { border: 1px solid rgba(110,242,196,0.4); color: #E6FBF3; }
-
-  .after { padding: 120px clamp(20px, 5vw, 80px) 48px; }
-  .after-wrap { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
-  h3 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(32px, 4vw, 56px); letter-spacing: -0.03em; line-height: 1.02; max-width: 18ch; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
-  .card { display: flex; flex-direction: column; gap: 12px; padding: 28px; border-radius: 14px; border: 1px solid rgba(110,242,196,0.22); background: rgba(4,20,15,0.85); }
-  .card .n { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); }
-  .card h4 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 500; }
-  .card p { margin: 0; font-size: 15px; line-height: 1.6; color: #B7C2BE; }
-  footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid rgba(110,242,196,0.15); font-size: 13px; line-height: 1.6; color: #9AA3B2; }
-  @media (prefers-reduced-motion: reduce) { .caret, .hint-line span, .load-pulse, .gh-wrap, .gh-move { animation: none !important; } }
+body{margin:0;background:#0A0B0F}
+a{color:#6EF2C4}a:hover{color:#A8F8DC}
+@keyframes caretBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes hintRun{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
+@keyframes ghEnterTop{from{transform:translateY(-100%) scaleY(1.5);opacity:0;filter:blur(15px)}to{transform:translateY(-50%) scaleY(1);opacity:1;filter:blur(0)}}
+@keyframes ghEnterBottom{from{transform:translateY(100%) scaleY(1.5);opacity:0;filter:blur(15px)}to{transform:translateY(50%) scaleY(1);opacity:1;filter:blur(0)}}
+@keyframes ghArcTop{from{transform:translateY(-40%) scale(var(--s))}to{transform:translateY(0) scale(var(--s))}}
+@keyframes ghArcBottom{from{transform:translateY(40%) scale(var(--s))}to{transform:translateY(0) scale(var(--s))}}
+.gh-wrap-top{animation:ghEnterTop 2s cubic-bezier(.16,1,.3,1) both}
+.gh-wrap-bottom{animation:ghEnterBottom 2s cubic-bezier(.16,1,.3,1) both}
+.gh-top .gh-move{animation:ghArcTop 2s cubic-bezier(.16,1,.3,1) both}
+.gh-bottom .gh-move{animation:ghArcBottom 2s cubic-bezier(.16,1,.3,1) both}
+@keyframes loadPulse{0%,100%{opacity:.35}50%{opacity:1}}
+.caret{animation:caretBlink 1s steps(1) infinite}
+.hint-run{animation:hintRun 1.6s cubic-bezier(.6,0,.4,1) infinite}
+.load-pulse{animation:loadPulse 1.4s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.caret,.hint-run,.load-pulse,.gh-wrap-top,.gh-wrap-bottom,.gh-move{animation:none !important}}
 </style>
 </head>
 <body>
-  <section class="track" id="track">
-    <div class="stage">
-      <!-- Sfondo "Glow Horizon" -->
-      <div class="gh gh-top" id="bgHorizon" aria-hidden="true">
-        <div class="gh-wrap">
-          <div class="arc arc-white"></div>
-          <div class="arc arc-glow gh-move"></div>
-          <div class="arc arc-deep gh-move"></div>
-          <div class="arc arc-black gh-move"></div>
-        </div>
-      </div>
-      <!-- Sfondo "Glow" -->
-      <div class="grad" id="bgGradient" aria-hidden="true" hidden>
-        <svg aria-hidden="true">
-          <filter id="grain-glow-hero"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
-          <rect width="100%" height="100%" filter="url(#grain-glow-hero)"/>
-        </svg>
-      </div>
-      <!-- Sfondo di glifi -->
-      <canvas class="layer" id="bgGlyphs" aria-hidden="true" style="z-index:1"></canvas>
-      <!-- Scena 3D -->
-      <canvas class="layer" id="scene" role="img" aria-label="MacBook 3D che ruota e, scorrendo, si avvicina fino a entrare nello schermo" style="z-index:5"></canvas>
+<div style="width: 100%; font-family: Inter, system-ui, sans-serif; color: #F2F4F7; background: #0A0B0F">
 
-      <p class="status load-pulse" id="loading">Caricamento modello…</p>
-      <p class="status err" id="failed" hidden>Il modello 3D non si è caricato. Ricarica la pagina.</p>
+  <!-- Traccia di scroll: lo stage resta fisso mentre scorri -->
+  <section data-ref="track" style="position: relative; height: 2600px">
+    <div style="position: sticky; top: 0; height: 100vh; overflow: hidden; background: var(--stage-bg)">
 
-      <header id="header">
-        <a class="logo" href="#dentro">GEMA</a>
-        <nav aria-label="Principale"><a href="#dentro">Progetto</a><a href="#dentro">Studio</a><a href="#dentro">Contatti</a></nav>
-      </header>
-
-      <div class="hero-text" id="heroText">
-        <p class="kicker">Scorri per attraversare il vetro</p>
-        <h1>Il mondo è più grande dentro lo schermo.</h1>
-      </div>
-
-      <div class="hint" id="hint"><span>Scorri</span><span class="hint-line" aria-hidden="true"><span></span></span></div>
-
-      <div class="inside grid-bg" id="inside">
-        <div class="inside-inner" id="insideInner">
-          <p class="mono">~/gema $ benvenuto<span class="caret">▍</span></p>
-          <h2>Sei dentro.</h2>
-          <p class="sub">[UNA FRASE SU COSA TROVA CHI ENTRA IN GEMA]</p>
-          <div class="ctas">
-            <a class="btn btn-primary" href="#dentro">Inizia</a>
-            <a class="btn btn-ghost" href="#dentro">Scopri di più</a>
+      <!-- Sfondo "Glow Horizon": archi luminosi che entrano dall'alto o dal basso -->
+      <div data-if="isHorizonTop" style="display: contents">
+        <div aria-hidden="true" class="gh-top" style="position: absolute; inset: 0; z-index: 0; overflow: hidden">
+          <div class="gh-wrap-top" style="position: absolute; inset: 0; isolation: isolate; transform: translateY(-50%)">
+            <div class="" style="--s: 1.32; position: absolute; inset: 0; border-radius: 100%; transform: scale(1.32); background: #FFFFFF; box-shadow: 0px -4px 23px 0px #ffffffb5; animation-delay: 1.2s"></div>
+            <div class="gh-move" style="--s: 1.2; position: absolute; inset: 0; border-radius: 100%; transform: scale(1.2); background: #536BE1; filter: blur(31px); animation-delay: 0.6s"></div>
+            <div class="gh-move" style="--s: 1.24; position: absolute; inset: 0; border-radius: 100%; transform: scale(1.24); background: #2E43B0; filter: blur(21px); animation-delay: 0s"></div>
+            <div class="gh-move" style="--s: 1.2; position: absolute; inset: 0; border-radius: 100%; transform: scale(1.2); background: #000; filter: blur(51px); animation-delay: 0s"></div>
           </div>
         </div>
       </div>
+      <div data-if="isHorizonBottom" style="display: contents">
+        <div aria-hidden="true" class="gh-bottom" style="position: absolute; inset: 0; z-index: 0; overflow: hidden">
+          <div class="gh-wrap-bottom" style="position: absolute; inset: 0; isolation: isolate; transform: translateY(50%)">
+            <div class="" style="--s: 1.32; position: absolute; inset: 0; border-radius: 100%; transform: scale(1.32); background: #FFFFFF; box-shadow: 0px 4px 23px 0px #ffffffb5; animation-delay: 1.2s"></div>
+            <div class="gh-move" style="--s: 1.2; position: absolute; inset: 0; border-radius: 100%; transform: scale(1.2); background: #536BE1; filter: blur(31px); animation-delay: 0.6s"></div>
+            <div class="gh-move" style="--s: 1.24; position: absolute; inset: 0; border-radius: 100%; transform: scale(1.24); background: #2E43B0; filter: blur(21px); animation-delay: 0s"></div>
+            <div class="gh-move" style="--s: 1.2; position: absolute; inset: 0; border-radius: 100%; transform: scale(1.2); background: #000; filter: blur(51px); animation-delay: 0s"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sfondo "Glow": gradiente con grana (21st.dev Gradient Builder) -->
+      <div data-if="isGrad" style="display: contents">
+        <div aria-hidden="true" style="position: absolute; inset: 0; z-index: 0; overflow: hidden; background-color: #F7F4EC; background-image: radial-gradient(100% 50% at 50% 70%, #d8586a 0.0%, #D0384E 20.4%, #E8B5BD 41.1%, #B1C2DE 61.8%, #2C5FB3 82.5%, rgba(44, 95, 179, 0) 85.3%), radial-gradient(42% 19% at 50% 70%, rgba(224, 126, 140, 0.396) 0%, rgba(208, 56, 78, 0.154) 38%, rgba(208, 56, 78, 0) 72%), radial-gradient(53% 29% at 50% 70%, rgba(232, 181, 189, 0.143) 0%, rgba(232, 181, 189, 0) 80%)">
+          <svg aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.21; mix-blend-mode: overlay">
+            <filter id="grain-glow-hero">
+              <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"></feTurbulence>
+              <feColorMatrix type="saturate" values="0"></feColorMatrix>
+            </filter>
+            <rect width="100%" height="100%" filter="url(#grain-glow-hero)"></rect>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Sfondo dinamico di glifi -->
+      <canvas data-ref="bg" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; z-index: 1"></canvas>
+
+      <!-- Scena 3D -->
+      <canvas data-ref="canvas" aria-label="MacBook 3D che ruota e, scorrendo, si avvicina fino a entrare nello schermo" role="img" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; z-index: 5"></canvas>
+
+      <div data-if="loading" style="display: contents">
+        <p class="load-pulse" style="position: absolute; left: 0; right: 0; top: 62%; z-index: 6; margin: 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--hint)">Caricamento modello…</p>
+      </div>
+      <div data-if="failed" style="display: contents">
+        <p style="position: absolute; left: 0; right: 0; top: 62%; z-index: 6; margin: 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #FFB86B">Il modello 3D non si è caricato. Ricarica la pagina.</p>
+      </div>
+
+
+      <!-- Titolo hero -->
+      <div data-ref="heroText" style="position: absolute; left: 0; right: 0; top: 12%; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 0 24px; text-align: center; pointer-events: none">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--kicker)">Scorri per attraversare il vetro</p>
+        <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(40px, 5.4vw, 80px); line-height: 0.98; letter-spacing: -0.035em; max-width: 20ch; color: var(--ink)">Il mondo è più grande dentro lo schermo.</h1>
+      </div>
+
+      <!-- Suggerimento scroll -->
+      <div data-ref="hint" style="position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--hint)">
+        <span>Scorri</span>
+        <span aria-hidden="true" style="position: relative; display: block; width: 1px; height: 44px; overflow: hidden; background: var(--hint-track)">
+          <span class="hint-run" style="position: absolute; left: 0; top: 0; width: 1px; height: 100%; background: var(--ink)"></span>
+        </span>
+      </div>
+
+      <!-- Dentro lo schermo -->
+      <div data-ref="inside" style="position: absolute; inset: 0; z-index: 20; opacity: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; padding: 96px 24px; box-sizing: border-box; background-color: #04140F; background-image: linear-gradient(rgba(110,242,196,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(110,242,196,0.07) 1px, transparent 1px); background-size: 56px 56px; box-shadow: inset 0 0 220px rgba(110,242,196,0.16)">
+        <div data-ref="insideInner" style="display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; max-width: 820px">
+          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 16px; color: var(--accent)">~/gema $ benvenuto<span class="caret">▍</span></p>
+          <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(56px, 10vw, 148px); line-height: 0.92; letter-spacing: -0.045em; color: #F2F4F7">Sei dentro.</h2>
+          <p style="margin: 0; font-size: clamp(16px, 1.5vw, 20px); line-height: 1.55; color: #B7C2BE; max-width: 52ch">[UNA FRASE SU COSA TROVA CHI ENTRA IN GEMA]</p>
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px">
+            <a href="#dentro" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 26px; border-radius: 999px; background: var(--accent); color: #04140F; font-weight: 500; font-size: 15px; text-decoration: none">Inizia</a>
+            <a href="#dentro" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 26px; border-radius: 999px; border: 1px solid rgba(110,242,196,0.4); color: #E6FBF3; font-weight: 500; font-size: 15px; text-decoration: none">Scopri di più</a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <section class="after grid-bg" id="dentro">
-    <div class="after-wrap">
-      <h3>Cosa c'è qui dentro</h3>
-      <div class="cards">
-        <article class="card"><span class="n">01</span><h4>[TITOLO]</h4><p>[DESCRIZIONE BREVE]</p></article>
-        <article class="card"><span class="n">02</span><h4>[TITOLO]</h4><p>[DESCRIZIONE BREVE]</p></article>
-        <article class="card"><span class="n">03</span><h4>[TITOLO]</h4><p>[DESCRIZIONE BREVE]</p></article>
+  <!-- Navbar: compare quando si esce dalla hero -->
+  <header data-ref="nav" style="position: fixed; top: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center; justify-content: flex-end; min-height: 72px; padding: 0 clamp(20px, 4vw, 56px); box-sizing: border-box; opacity: 0; pointer-events: none">
+    <nav aria-label="Principale" style="display: flex; gap: 28px; flex-wrap: wrap; font-size: 14px">
+      <a href="#dentro" style="color: #E6E9EF; text-decoration: none">Progetto</a>
+      <a href="#dentro" style="color: #E6E9EF; text-decoration: none">Studio</a>
+      <a href="#dentro" style="color: #E6E9EF; text-decoration: none">Contatti</a>
+    </nav>
+  </header>
+  <!-- Logo che esce dallo schermo e si sposta in alto a sinistra -->
+  <a data-ref="floatLogo" href="#dentro" aria-label="GEMA" style="position: fixed; left: 0; top: 0; z-index: 41; display: block; width: 833px; height: 268px; transform-origin: 0 0; opacity: 0; pointer-events: none">
+    <canvas data-ref="floatCanvas" width="1666" height="536" style="display: block; width: 100%; height: 100%"></canvas>
+  </a>
+
+  <!-- Continua dentro lo schermo -->
+  <section id="dentro" style="background-color: #04140F; background-image: linear-gradient(rgba(110,242,196,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(110,242,196,0.07) 1px, transparent 1px); background-size: 56px 56px; padding: 120px clamp(20px, 5vw, 80px) 48px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px">
+      <h3 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(32px, 4vw, 56px); letter-spacing: -0.03em; line-height: 1.02; max-width: 18ch">Cosa c'è qui dentro</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px">
+        <article style="display: flex; flex-direction: column; gap: 12px; padding: 28px; border-radius: 14px; border: 1px solid rgba(110,242,196,0.22); background: rgba(4,20,15,0.85)">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent)">01</span>
+          <h4 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 500">[TITOLO]</h4>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #B7C2BE">[DESCRIZIONE BREVE]</p>
+        </article>
+        <article style="display: flex; flex-direction: column; gap: 12px; padding: 28px; border-radius: 14px; border: 1px solid rgba(110,242,196,0.22); background: rgba(4,20,15,0.85)">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent)">02</span>
+          <h4 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 500">[TITOLO]</h4>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #B7C2BE">[DESCRIZIONE BREVE]</p>
+        </article>
+        <article style="display: flex; flex-direction: column; gap: 12px; padding: 28px; border-radius: 14px; border: 1px solid rgba(110,242,196,0.22); background: rgba(4,20,15,0.85)">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent)">03</span>
+          <h4 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 500">[TITOLO]</h4>
+          <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #B7C2BE">[DESCRIZIONE BREVE]</p>
+        </article>
       </div>
-      <footer>
+      <footer style="margin-top: 72px; padding-top: 24px; border-top: 1px solid rgba(110,242,196,0.15); font-size: 13px; line-height: 1.6; color: #9AA3B2">
         Modello 3D “MacBook Pro M3 16 inch 2024” di <a href="https://sketchfab.com/jackbaeten">jackbaeten</a> su Sketchfab, con licenza <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Modificato: modello compresso e contenuto dello schermo sostituito.
       </footer>
     </div>
   </section>
+</div>
 
 <script src="vendor/three.min.js"></script>
 <script src="vendor/GLTFLoader.js"></script>
 <script src="vendor/RoomEnvironment.js"></script>
 <script>
-(function () {
-  // ===== Impostazioni (le stesse dei Tweaks del canvas) =====
-  var CONFIG = {
-    sfondo: 'orizzonte',     // 'orizzonte' | 'gradiente' | 'glifi'
-    orizzonte: 'alto',       // 'alto' | 'basso'
-    accent: '#6EF2C4',       // colore di schermo, bottoni e glifi
-    spinSpeed: 18,           // gradi al secondo
-    modelUrl: 'models/macbook.glb'
-  };
+// ===== Impostazioni (le stesse dei Tweaks del canvas) =====
+var CONFIG = {
+  sfondo: 'orizzonte',    // 'orizzonte' | 'gradiente' | 'glifi'
+  orizzonte: 'alto',      // 'alto' | 'basso'
+  dispositivo: 'auto',    // 'auto' (telefono sotto i 768 px) | 'computer' | 'telefono'
+  accent: '#6EF2C4',      // colore di bottoni e scena "Sei dentro"
+  spinSpeed: 18           // gradi al secondo
+};
 
-  var $ = function (id) { return document.getElementById(id); };
-  var e = { track: $('track'), canvas: $('scene'), bg: $('bgGlyphs'), header: $('header'), heroText: $('heroText'), hint: $('hint'), inside: $('inside'), insideInner: $('insideInner') };
-
-  function themeFor() {
-    if (CONFIG.sfondo === 'gradiente') return { stageBg: '#F7F4EC', ink: '#15161B', navLink: '#3B3E47', kicker: '#15161B', hint: '#4A4E58', hintTrack: 'rgba(21,22,27,0.15)', rim: 0x6ef2c4, exposure: 0.72 };
-    if (CONFIG.sfondo === 'glifi') return { stageBg: '#0A0B0F', ink: '#F2F4F7', navLink: '#C9CED8', kicker: CONFIG.accent, hint: '#9AA3B2', hintTrack: 'rgba(242,244,247,0.15)', rim: 0x6ef2c4, exposure: 0.72 };
-    return { stageBg: '#000000', ink: '#F2F4F7', navLink: '#C9CED8', kicker: '#B9C5F6', hint: '#A3AAC2', hintTrack: 'rgba(242,244,247,0.15)', rim: 0x536be1, exposure: 0.85 };
+// Piccolo adattatore: fa girare qui lo stesso componente del canvas Design
+class DCLogic {
+  constructor(props) { this.props = props; this.state = {}; }
+  setState(patch) { Object.assign(this.state, patch); renderHero(); }
+}
+class Component extends DCLogic {
+  componentDidMount() {
+    var self = this;
+    this.els = this.els || {};
+    this.alive = true;
+    var tries = 0;
+    // In automatico: se la finestra passa sopra o sotto i 768 px cambia modello
+    var rt = null;
+    this.onResize = function () { clearTimeout(rt); rt = setTimeout(function () { if (self.alive) self.componentDidUpdate(); }, 250); };
+    window.addEventListener('resize', this.onResize);
+    var wait = function () {
+      if (!self.alive) return;
+      if (window.THREE && window.THREE.GLTFLoader && window.THREE.RoomEnvironment && self.els.canvas && self.els.bg) { self.initScene(); return; }
+      if (++tries > 200) { self.setState({ failed: true }); return; }
+      setTimeout(wait, 50);
+    };
+    wait();
   }
-  var TH = themeFor(), root = document.documentElement.style;
-  root.setProperty('--accent', CONFIG.accent); root.setProperty('--stage-bg', TH.stageBg); root.setProperty('--ink', TH.ink);
-  root.setProperty('--nav-ink', TH.ink); root.setProperty('--nav-link', TH.navLink); root.setProperty('--kicker', TH.kicker);
-  root.setProperty('--hint', TH.hint); root.setProperty('--hint-track', TH.hintTrack);
-  $('bgHorizon').hidden = CONFIG.sfondo !== 'orizzonte';
-  $('bgHorizon').className = 'gh ' + (CONFIG.orizzonte === 'basso' ? 'gh-bottom' : 'gh-top');
-  $('bgGradient').hidden = CONFIG.sfondo !== 'gradiente';
 
-  if (!window.THREE || !THREE.GLTFLoader || !THREE.RoomEnvironment) { $('loading').hidden = true; $('failed').hidden = false; return; }
-
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
-  var smooth = function (a, b, v) { var t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
-
-  // Renderer, scena, luci
-  var renderer = new THREE.WebGLRenderer({ canvas: e.canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = TH.exposure;
-  var scene = new THREE.Scene();
-  var pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
-  var key = new THREE.DirectionalLight(0xffffff, 0.55); key.position.set(3, 5, 4); scene.add(key);
-  var rim = new THREE.DirectionalLight(TH.rim, TH.rim === 0x536be1 ? 1.6 : 0.9); rim.position.set(-4, 2, -5); scene.add(rim);
-  var camera = new THREE.PerspectiveCamera(32, 1, 0.05, 2000);
-
-  // Sfondo di glifi (solo con sfondo: 'glifi')
-  var bg = e.bg, bctx = bg.getContext('2d');
-  var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&*+=<>/\\|{}[]:;.~^-_?!';
-  var cellW = 14, cellH = 20, cols = 0, rows = 0, glyphs = [], bgW = 0, bgH = 0, bgDpr = 1, trail = [], ripples = [], lastBg = 0;
-  function resizeBg() {
-    var w = bg.clientWidth, h = bg.clientHeight; if (!w || !h) return;
-    bgDpr = Math.min(window.devicePixelRatio || 1, 2);
-    bg.width = Math.round(w * bgDpr); bg.height = Math.round(h * bgDpr); bgW = w; bgH = h;
-    cols = Math.ceil(w / cellW) + 1; rows = Math.ceil(h / cellH) + 1; glyphs = [];
-    for (var i = 0; i < cols * rows; i++) glyphs.push(CHARS[(Math.random() * CHARS.length) | 0]);
+  resolveDevice() {
+    var d = this.props.dispositivo || 'auto';
+    if (d === 'computer' || d === 'telefono') return d;
+    return window.matchMedia && window.matchMedia('(max-width: 767px)').matches ? 'telefono' : 'computer';
   }
-  if (CONFIG.sfondo === 'glifi') {
-    window.addEventListener('pointermove', function (ev) {
-      var r = bg.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
-      if (x < 0 || y < 0 || x > r.width || y > r.height) return;
-      trail.push({ x: x, y: y, life: 1 }); if (trail.length > 28) trail.shift();
-    }, { passive: true });
-    window.addEventListener('pointerdown', function (ev) {
-      var r = bg.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+
+  stopScene() {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.blink) clearInterval(this.blink);
+    if (this.cleanupBg) this.cleanupBg();
+    if (this.renderer) this.renderer.dispose();
+    this.raf = null; this.blink = null; this.cleanupBg = null; this.renderer = null; this.scene = null;
+  }
+
+  componentDidUpdate() {
+    // Cambio di dispositivo dai Tweaks: ricarica la scena con l'altro modello
+    if (this.renderer && this.device && this.resolveDevice() !== this.device) {
+      this.stopScene();
+      this.setState({ loading: true, failed: false });
+      this.initScene();
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.onResize) window.removeEventListener('resize', this.onResize);
+    this.alive = false;
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.blink) clearInterval(this.blink);
+    if (this.cleanupBg) this.cleanupBg();
+    if (this.renderer) this.renderer.dispose();
+  }
+
+  initScene() {
+    var self = this, THREE = window.THREE, e = this.els;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+    var smooth = function (a, b, v) { var t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+
+    // Renderer, scena, luci
+    var renderer = new THREE.WebGLRenderer({ canvas: e.canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.72;
+    this.renderer = renderer;
+    var scene = new THREE.Scene();
+    this.scene = scene; this.device = this.resolveDevice();
+    var pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+    var key = new THREE.DirectionalLight(0xffffff, 0.55); key.position.set(3, 5, 4); scene.add(key);
+    var rim = new THREE.DirectionalLight(0x6ef2c4, 0.9); rim.position.set(-4, 2, -5); scene.add(rim);
+
+    // Sfondo di glifi: campo di caratteri illuminato da bagliori, scia del cursore e onde al clic
+    var bg = e.bg, bctx = bg.getContext('2d');
+    var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&*+=<>/\\|{}[]:;.~^-_?!';
+    var cellW = 14, cellH = 20, cols = 0, rows = 0, glyphs = [], bgW = 0, bgH = 0, bgDpr = 1;
+    var trail = [], ripples = [], pointer = null, lastBg = 0;
+    var resizeBg = function () {
+      var w = bg.clientWidth, h = bg.clientHeight; if (!w || !h) return;
+      bgDpr = Math.min(window.devicePixelRatio || 1, 2);
+      bg.width = Math.round(w * bgDpr); bg.height = Math.round(h * bgDpr); bgW = w; bgH = h;
+      cols = Math.ceil(w / cellW) + 1; rows = Math.ceil(h / cellH) + 1; glyphs = [];
+      for (var i = 0; i < cols * rows; i++) glyphs.push(CHARS[(Math.random() * CHARS.length) | 0]);
+    };
+    var stageRect = function () { return bg.getBoundingClientRect(); };
+    var onMove = function (ev) {
+      var r = stageRect(); var x = ev.clientX - r.left, y = ev.clientY - r.top;
+      if (x < 0 || y < 0 || x > r.width || y > r.height) { pointer = null; return; }
+      pointer = { x: x, y: y }; trail.push({ x: x, y: y, life: 1 }); if (trail.length > 28) trail.shift();
+    };
+    var onDown = function (ev) {
+      var r = stageRect(); var x = ev.clientX - r.left, y = ev.clientY - r.top;
       if (x < 0 || y < 0 || x > r.width || y > r.height) return;
       ripples.push({ x: x, y: y, t: 0 }); if (ripples.length > 6) ripples.shift();
-    }, { passive: true });
-  }
-  var hexRgb = function (h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };
-  function drawBg(now, fade) {
-    if (CONFIG.sfondo !== 'glifi') return;
-    if (bg.clientWidth !== bgW || bg.clientHeight !== bgH) resizeBg();
-    if (!cols) return;
-    var dt = Math.min(100, now - (lastBg || now)); lastBg = now;
-    var ts = now / 1000, rgb = hexRgb(CONFIG.accent), M = Math.max(bgW, bgH);
-    var glows = [
-      { x: bgW * (0.5 + 0.38 * Math.sin(ts * 0.13)), y: bgH * (0.5 + 0.34 * Math.cos(ts * 0.17)), r: M * 0.32 },
-      { x: bgW * (0.5 + 0.42 * Math.cos(ts * 0.09 + 2)), y: bgH * (0.5 + 0.3 * Math.sin(ts * 0.11 + 1)), r: M * 0.26 },
-      { x: bgW * (0.5 + 0.3 * Math.sin(ts * 0.07 + 4)), y: bgH * (0.5 + 0.4 * Math.sin(ts * 0.15 + 3)), r: M * 0.22 }
-    ];
-    trail.forEach(function (p) { p.life -= dt / 700; }); trail = trail.filter(function (p) { return p.life > 0; });
-    ripples.forEach(function (rp) { rp.t += dt / 1000; }); ripples = ripples.filter(function (rp) { return rp.t < 2.4; });
-    var swaps = reduce ? 0 : Math.ceil(cols * rows * 0.004);
-    for (var s = 0; s < swaps; s++) glyphs[(Math.random() * glyphs.length) | 0] = CHARS[(Math.random() * CHARS.length) | 0];
-    bctx.setTransform(bgDpr, 0, 0, bgDpr, 0, 0); bctx.clearRect(0, 0, bgW, bgH);
-    bctx.font = '500 12px "JetBrains Mono", ui-monospace, monospace'; bctx.textAlign = 'center'; bctx.textBaseline = 'middle';
-    for (var j = 0; j < rows; j++) {
-      var cy = j * cellH + cellH / 2;
-      for (var i = 0; i < cols; i++) {
-        var cx = i * cellW + cellW / 2, L = 0.035, k, dx, dy, d2;
-        for (k = 0; k < 3; k++) { dx = cx - glows[k].x; dy = cy - glows[k].y; d2 = (dx * dx + dy * dy) / (glows[k].r * glows[k].r); if (d2 < 1) L += 0.32 * (1 - d2) * (1 - d2); }
-        for (k = 0; k < trail.length; k++) { dx = cx - trail[k].x; dy = cy - trail[k].y; d2 = (dx * dx + dy * dy) / 5600; if (d2 < 1) L += 0.55 * trail[k].life * (1 - d2); }
-        for (k = 0; k < ripples.length; k++) { var rp = ripples[k], dd = Math.sqrt((cx - rp.x) * (cx - rp.x) + (cy - rp.y) * (cy - rp.y)) - rp.t * 520; if (dd > -40 && dd < 40) L += 0.7 * (1 - Math.abs(dd) / 40) * (1 - rp.t / 2.4); }
-        L = Math.min(1, L) * fade; if (L < 0.02) continue;
-        bctx.fillStyle = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + L.toFixed(3) + ')';
-        bctx.fillText(glyphs[j * cols + i], cx, cy);
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerdown', onDown, { passive: true });
+    this.cleanupBg = function () { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerdown', onDown); };
+    var hexRgb = function (h) { h = (h || '#6EF2C4').replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };
+    var bgCleared = false;
+    var drawBg = function (now, fade) {
+      if ((self.props.sfondo || 'orizzonte') !== 'glifi') { if (!bgCleared && bgW) { bctx.setTransform(1, 0, 0, 1, 0, 0); bctx.clearRect(0, 0, bg.width, bg.height); bgCleared = true; } lastBg = now; return; }
+      bgCleared = false;
+      if (bg.clientWidth !== bgW || bg.clientHeight !== bgH) resizeBg();
+      if (!cols) return;
+      var dt = Math.min(100, now - (lastBg || now)); lastBg = now;
+      var ts = now / 1000, rgb = hexRgb(self.props.accent);
+      var glows = [
+        { x: bgW * (0.5 + 0.38 * Math.sin(ts * 0.13)), y: bgH * (0.5 + 0.34 * Math.cos(ts * 0.17)), r: Math.max(bgW, bgH) * 0.32 },
+        { x: bgW * (0.5 + 0.42 * Math.cos(ts * 0.09 + 2)), y: bgH * (0.5 + 0.3 * Math.sin(ts * 0.11 + 1)), r: Math.max(bgW, bgH) * 0.26 },
+        { x: bgW * (0.5 + 0.3 * Math.sin(ts * 0.07 + 4)), y: bgH * (0.5 + 0.4 * Math.sin(ts * 0.15 + 3)), r: Math.max(bgW, bgH) * 0.22 }
+      ];
+      trail.forEach(function (p) { p.life -= dt / 700; }); trail = trail.filter(function (p) { return p.life > 0; });
+      ripples.forEach(function (rp) { rp.t += dt / 1000; }); ripples = ripples.filter(function (rp) { return rp.t < 2.4; });
+      var swaps = reduce ? 0 : Math.ceil(cols * rows * 0.004);
+      for (var s = 0; s < swaps; s++) glyphs[(Math.random() * glyphs.length) | 0] = CHARS[(Math.random() * CHARS.length) | 0];
+      bctx.setTransform(bgDpr, 0, 0, bgDpr, 0, 0);
+      bctx.clearRect(0, 0, bgW, bgH);
+      bctx.font = '500 12px "JetBrains Mono", ui-monospace, monospace';
+      bctx.textAlign = 'center'; bctx.textBaseline = 'middle';
+      for (var j = 0; j < rows; j++) {
+        var cy = j * cellH + cellH / 2;
+        for (var i = 0; i < cols; i++) {
+          var cx = i * cellW + cellW / 2, L = 0.035, k, dx, dy, d2;
+          for (k = 0; k < 3; k++) { dx = cx - glows[k].x; dy = cy - glows[k].y; d2 = (dx * dx + dy * dy) / (glows[k].r * glows[k].r); if (d2 < 1) L += 0.32 * (1 - d2) * (1 - d2); }
+          for (k = 0; k < trail.length; k++) { dx = cx - trail[k].x; dy = cy - trail[k].y; d2 = (dx * dx + dy * dy) / 5600; if (d2 < 1) L += 0.55 * trail[k].life * (1 - d2); }
+          for (k = 0; k < ripples.length; k++) {
+            var rp = ripples[k], rad = rp.t * 520, dd = Math.sqrt((cx - rp.x) * (cx - rp.x) + (cy - rp.y) * (cy - rp.y)) - rad;
+            if (dd > -40 && dd < 40) L += 0.7 * (1 - Math.abs(dd) / 40) * (1 - rp.t / 2.4);
+          }
+          L = Math.min(1, L) * fade;
+          if (L < 0.02) continue;
+          bctx.fillStyle = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + L.toFixed(3) + ')';
+          bctx.fillText(glyphs[j * cols + i], cx, cy);
+        }
       }
-    }
-  }
+    };
+    var camera = new THREE.PerspectiveCamera(32, 1, 0.05, 2000);
 
-  // Contenuto dello schermo del MacBook
-  var sc = document.createElement('canvas'); sc.width = 2048; sc.height = 1320;
-  var ctx = sc.getContext('2d');
-  var screenTex = new THREE.CanvasTexture(sc);
-  screenTex.encoding = THREE.sRGBEncoding; screenTex.flipY = false;
-  screenTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  var caretOn = true;
-  function drawScreen() {
-    var W = sc.width, H = sc.height, acc = CONFIG.accent;
-    ctx.fillStyle = '#04140F'; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = 'rgba(110,242,196,0.08)'; ctx.lineWidth = 2; ctx.beginPath();
-    for (var x = 64; x < W; x += 64) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
-    for (var y = 64; y < H; y += 64) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
-    ctx.stroke();
-    var g = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, W * 0.7);
-    g.addColorStop(0, 'rgba(110,242,196,0)'); g.addColorStop(1, 'rgba(110,242,196,0.16)');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = '#2E4A41';
-    for (var i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(60 + i * 40, 60, 12, 0, Math.PI * 2); ctx.fill(); }
-    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(110,242,196,0.3)'; ctx.strokeRect(130, 200, 760, 430);
-    ctx.strokeStyle = 'rgba(110,242,196,0.22)'; ctx.strokeRect(W - 740, H - 470, 600, 320);
-    ctx.font = '500 72px "JetBrains Mono", ui-monospace, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.shadowColor = acc; ctx.shadowBlur = 36; ctx.fillStyle = acc;
-    var txt = '~/gema $ entra'; ctx.fillText(txt, W / 2 - 24, H / 2);
-    if (caretOn) { var tw = ctx.measureText(txt).width; ctx.fillRect(W / 2 - 24 + tw / 2 + 8, H / 2 - 40, 34, 80); }
-    ctx.shadowBlur = 0; screenTex.needsUpdate = true;
-  }
-  drawScreen();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawScreen);
-  setInterval(function () { caretOn = !caretOn; drawScreen(); }, 530);
+    // Dispositivo: MacBook da computer, telefono da smartphone (si scarica solo il modello che serve)
+    var DEVICES = {
+      computer: { url: 'models/macbook.glb', screen: ['sfCQkHOWyrsLmor'], normalToCenter: true, darken: true, hide: [], texW: 1536, texH: 990, logoFrac: 0.5 },
+      telefono: { url: 'models/phone.glb', screen: ['COLOUR_Black_Screen'], normalToCenter: false, darken: false, hide: ['COLOUR_Black_Apple'], texW: 810, texH: 1740, logoFrac: 0.78 }
+    };
+    var dev = DEVICES[this.resolveDevice()];
 
-  var pivot = new THREE.Group(); scene.add(pivot);
-  var rig = null;
-
-  new THREE.GLTFLoader().load(CONFIG.modelUrl, function (gltf) {
-    var model = gltf.scene, screenMesh = null;
-    model.traverse(function (o) {
-      if (!o.isMesh) return;
-      var m = o.material;
-      if (m && (m.name === 'sfCQkHOWyrsLmor' || (m.emissiveIntensity && m.emissiveIntensity > 2))) { screenMesh = o; return; }
-      (Array.isArray(m) ? m : [m]).forEach(function (mm) {
-        if (!mm || mm.userData.darkened) return;
-        mm.userData.darkened = true;
-        if (mm.color) { var l = mm.color.r * 0.3 + mm.color.g * 0.59 + mm.color.b * 0.11; if (l > 0.12) mm.color.multiplyScalar(0.32); }
-        mm.envMapIntensity = 0.55;
+    // Contenuto dello schermo, disegnato su un canvas
+    var sc = document.createElement('canvas'); sc.width = dev.texW; sc.height = dev.texH;
+    var ctx = sc.getContext('2d');
+    var screenTex = new THREE.CanvasTexture(sc);
+    screenTex.encoding = THREE.sRGBEncoding;
+    screenTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    // Logo GEMA cromato animato (variante 02 "Blu anodizzato")
+    var GEMA_PATHS = [
+      'M32.2579 36.5333C44.5345 36.205 58.1788 36.498 70.5433 36.4938L144.723 36.4677H179.212C185.351 36.4694 195.809 36.049 201.552 37.2438C203.116 39.0794 201.558 98.4341 201.552 104.099C192.032 104.099 185.646 104.099 176.926 104.099C163.72 104.099 155.797 104.099 145.245 104.099C145.305 96.9824 145.277 89.8651 145.16 82.7487C138.297 82.3615 129.333 82.6057 122.343 82.6036C110.964 82.5229 99.5846 82.5649 88.2064 82.7298C87.4387 109.519 88.5722 136.793 88.0874 163.627C87.9583 170.765 87.8995 178.589 88.2497 185.674C105.775 186.317 127.478 185.783 145.168 185.682C145.276 177.639 145.29 169.592 145.209 161.55C134.571 165.615 124.566 170.913 113.544 174.28L113.537 155.656L113.496 129.216C131.247 129.216 183.504 129.216 202.364 129.216C202.364 134.587 202.364 129.385 202.364 135.455C202.364 139.682 202.364 135.896 202.364 139.815C202.946 159.044 202.087 179.674 202.46 199.039C202.556 203.974 202.712 227.446 201.882 230.923C197.789 231.852 185.031 231.562 180.08 231.566H140.632L69.6991 231.558C58.6997 231.558 43.5693 232.004 32.8326 231.449C32.1141 231.016 31.3612 230.671 31.3149 229.624C31.143 225.769 31.2191 220.9 31.2182 217.091L31.2123 180.809L31.2106 88.5896C31.2115 72.6288 31.1757 56.6138 31.2598 40.6522C31.2695 38.8301 31.3485 38.0481 32.2579 36.5333Z',
+      'M224.756 36.517L345.117 36.4745L375.364 36.4813C380.262 36.4834 390.109 36.176 394.356 37.1274C396.568 42.0632 394.11 73.8607 395.005 81.4997C395.101 82.3187 394.717 84.0373 394.173 84.7853C390.001 85.627 368.766 85.2881 363.641 85.2881L311.427 85.283C301.621 85.2826 290.832 85.0623 281.088 85.4352C280.567 89.7075 280.765 105.004 281.079 109.545C288.868 109.948 299.279 109.651 307.218 109.651L357.312 109.623C361.272 109.621 381.747 108.978 384.335 110.736C385.285 113.599 385.433 154.066 384.185 157.106C381.059 158.821 318.448 157.964 309.444 157.96C299.997 157.905 290.55 157.934 281.104 158.048C280.461 163.908 280.868 176.26 281.07 182.424C289.118 182.97 301.582 182.571 310.071 182.567L365.253 182.529C372.04 182.525 388.765 182.121 394.935 182.945C395.41 193.842 394.79 205.168 395.047 216.112C395.11 218.782 395.494 229.83 393.893 231.142C390.858 231.768 384.538 231.575 381.179 231.575H361.559L284.031 231.562L244.61 231.592C238.522 231.604 231.673 231.798 225.611 231.339C224.353 231.247 224.425 231.037 223.909 230.297C223.127 223.356 223.49 210.491 223.488 202.999L223.484 154.121L223.49 78.8599C223.492 65.9316 223.427 52.8894 223.59 39.9594C223.611 38.3387 223.804 37.7472 224.756 36.517Z',
+      'M417.979 36.5213C435.788 36.0685 455.745 36.4911 473.722 36.5163C476.85 41.27 480.466 47.9672 483.333 52.9744C489.757 64.3989 496.324 75.7397 503.042 86.993C512.413 70.5534 522.407 52.5754 532.173 36.4957L568.005 36.4734C572.693 36.4721 583.287 36.214 587.504 36.8787C588.24 37.5165 588.631 38.0294 588.669 39.167C588.892 45.6003 588.799 52.5246 588.799 58.9334L588.808 101.485L588.824 182.083C588.824 187.666 589.451 228.38 587.799 230.797C584.885 231.886 535.41 232.058 532.417 230.89C530.512 228.43 531.294 195.587 531.307 190.08L531.248 132.165C521.688 148.185 512.598 165.443 503.072 181.751C501.663 179.725 500.398 177.404 499.115 175.277C490.535 161.041 482.921 145.992 474.34 131.796C474.832 160.945 474.239 190.227 474.47 219.387C474.5 222.7 474.567 226.168 474.079 229.359C473.966 230.108 473.991 230.558 473.314 230.885C472.104 231.47 470.905 231.491 469.594 231.579C462.505 231.096 422.158 232.428 417.811 230.911C416.709 225.231 417.071 213.598 417.066 207.262L417.075 167.94L417.054 84.8699C417.058 78.5821 416.486 39.933 417.979 36.5213Z',
+      'M667.922 36.5157C686.803 36.2769 706.181 36.4879 725.099 36.4782C731.944 49.2253 739.024 64.2322 745.54 77.2862L783.21 152.645C782.793 153.335 782.348 154.003 781.873 154.655C770.067 170.555 743.005 178.009 724.09 181.112C691.47 185.863 630.219 182.617 610.085 152.54C612.608 146.848 615.627 140.893 618.469 135.333C635.201 102.581 650.938 69.1183 667.922 36.5157Z',
+      'M667.923 195.318C686.804 195.08 706.181 195.291 725.1 195.281C731.843 207.84 738.816 222.592 745.253 235.51H647.626C654.286 222.041 661 208.608 667.923 195.318Z'
+    ];
+    var GEMA_HOLE = 'M696.174 84.686C698.141 86.9428 714.365 126.746 717.514 134.008L697.49 134.001L675.393 133.973L696.174 84.686Z';
+    var LOGO = { velocita: 7 }; // secondi per un passaggio di riflessi
+    var lc = document.createElement('canvas'); lc.width = 1666; lc.height = 536;
+    var lctx = lc.getContext('2d');
+    var gemaPath = new Path2D(), gemaHole = new Path2D(GEMA_HOLE);
+    GEMA_PATHS.forEach(function (d) { gemaPath.addPath(new Path2D(d)); });
+    var CHROME = [[0, '#eef1ff'], [0.25, '#a9b8ff'], [0.46, '#536BE1'], [0.5, '#18215a'], [0.54, '#8296f6'], [0.76, '#d4dcff'], [1, '#6b80ea']];
+    var drawLogo = function (ts) {
+      var c = lctx, S = lc.width / 833;
+      c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, lc.width, lc.height);
+      c.setTransform(S, 0, 0, S, 0, 0);
+      // bordo scuro sotto le lettere (spessore)
+      c.save(); c.translate(0, 5); c.fillStyle = '#0f1640'; c.fill(gemaPath); c.restore();
+      // cromatura: bande diagonali che scorrono, ripetute a specchio
+      var L = 355, d = ((ts / LOGO.velocita) * 2 * L) % (2 * L);
+      var ux = 233 / L, uy = 268 / L;
+      var x0 = 300 + ux * (d - 2 * L), y0 = uy * (d - 2 * L);
+      var gr = c.createLinearGradient(x0, y0, x0 + ux * 4 * L, y0 + uy * 4 * L);
+      for (var k = 0; k < 4; k++) CHROME.forEach(function (st) {
+        var o = k % 2 ? 1 - st[0] : st[0]; gr.addColorStop((k + o) / 4, st[1]);
       });
-    });
-    var box = new THREE.Box3().setFromObject(model);
-    model.position.sub(box.getCenter(new THREE.Vector3()));
-    pivot.add(model); pivot.updateMatrixWorld(true);
-    box.setFromObject(model);
-    var size = box.getSize(new THREE.Vector3());
-    var radius = box.getBoundingSphere(new THREE.Sphere()).radius;
+      c.fillStyle = gr; c.fill(gemaPath);
+      // filo di luce in alto
+      var rim = c.createLinearGradient(0, 36, 0, 236);
+      rim.addColorStop(0, 'rgba(255,255,255,0.9)'); rim.addColorStop(0.35, 'rgba(255,255,255,0.15)'); rim.addColorStop(1, 'rgba(255,255,255,0)');
+      c.lineWidth = 1.6; c.strokeStyle = rim; c.stroke(gemaPath);
+      // foro della A trasparente
+      c.globalCompositeOperation = 'destination-out'; c.fill(gemaHole); c.globalCompositeOperation = 'source-over';
+    };
+    drawLogo(0);
+    // Schermo: logo cromato su fondo nero
+    var drawScreen = function () {
+      var W = sc.width, H = sc.height;
+      ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, W, H);
+      var lw = W * dev.logoFrac, lh = lw * (268 / 833);
+      ctx.drawImage(lc, (W - lw) / 2, (H - lh) / 2, lw, lh);
+      screenTex.needsUpdate = true;
+    };
+    drawScreen();
 
-    var sCenter = new THREE.Vector3(), u = new THREE.Vector3(1, 0, 0), v = new THREE.Vector3(0, 1, 0), n = new THREE.Vector3(0, 0, 1);
-    var sW = size.x * 0.9, sH = size.y * 0.6;
-    if (screenMesh) {
-      screenMesh.material = new THREE.MeshBasicMaterial({ map: screenTex, toneMapped: false, side: THREE.DoubleSide });
-      var pos = screenMesh.geometry.attributes.position, pts = [], p = new THREE.Vector3(), c = new THREE.Vector3();
-      for (var i = 0; i < pos.count; i++) { p.fromBufferAttribute(pos, i).applyMatrix4(screenMesh.matrixWorld); pts.push(p.clone()); c.add(p); }
-      c.divideScalar(pts.length);
-      var ext = new THREE.Box3().setFromPoints(pts).getSize(new THREE.Vector3());
-      u.set(ext.x >= ext.z ? 1 : 0, 0, ext.x >= ext.z ? 0 : 1);
-      var far = null, best = -1, q = new THREE.Vector3();
-      pts.forEach(function (pt) { q.copy(pt).sub(c); q.addScaledVector(u, -q.dot(u)); if (q.length() > best) { best = q.length(); far = q.clone(); } });
-      v.copy(far).normalize(); if (v.y < 0) v.negate();
-      n.crossVectors(u, v).normalize();
-      if (n.dot(new THREE.Vector3().sub(c)) < 0) { u.negate(); n.negate(); }
-      var minU = Infinity, maxU = -Infinity, minV = Infinity, maxV = -Infinity;
-      pts.forEach(function (pt) { q.copy(pt).sub(c); var a = q.dot(u), b = q.dot(v); minU = Math.min(minU, a); maxU = Math.max(maxU, a); minV = Math.min(minV, b); maxV = Math.max(maxV, b); });
-      sW = maxU - minU; sH = maxV - minV;
-      sCenter.copy(c).addScaledVector(u, (minU + maxU) / 2).addScaledVector(v, (minV + maxV) / 2);
-    }
-    var front = new THREE.Vector3(n.x, 0, n.z); if (front.lengthSq() < 1e-6) front.set(0, 0, 1); front.normalize();
-    var dir0 = front.clone().add(new THREE.Vector3(0, 0.42, 0)).normalize();
-    rig = { radius: radius, sCenter: sCenter, sW: sW, sH: sH, n: n, v: v, dir0: dir0 };
-    $('loading').hidden = true;
-  }, undefined, function () { $('loading').hidden = true; $('failed').hidden = false; });
+    var pivot = new THREE.Group(); scene.add(pivot);
+    var rig = null;
 
-  // Loop
-  var angle = 0, last = performance.now(), lastW = 0, lastH = 0;
-  var qTumble = new THREE.Quaternion(), qRest = new THREE.Quaternion();
-  var spinAxis = new THREE.Vector3(0.55, 1, 0.2).normalize(); // asse inclinato: rotazione costante con capriole
-  var tmpDir = new THREE.Vector3(), tmpTarget = new THREE.Vector3(), up0 = new THREE.Vector3(0, 1, 0), tmpUp = new THREE.Vector3();
-  function tick(now) {
-    var dt = Math.min(64, now - last); last = now;
-    var cw = e.canvas.clientWidth, ch = e.canvas.clientHeight;
-    if (cw && ch && (cw !== lastW || ch !== lastH)) { renderer.setSize(cw, ch, false); camera.aspect = cw / ch; camera.updateProjectionMatrix(); lastW = cw; lastH = ch; }
-    var vh = window.innerHeight, r = e.track.getBoundingClientRect();
-    var pr = clamp(-r.top / Math.max(1, r.height - vh), 0, 1);
+    new THREE.GLTFLoader().load(dev.url, function (gltf) {
+      if (!self.alive || self.scene !== scene) return;
+      var model = gltf.scene;
+      var screenMesh = null;
+      model.traverse(function (o) {
+        if (!o.isMesh) return;
+        var m = o.material;
+        if (m && dev.screen.indexOf(m.name) >= 0) { screenMesh = o; return; }
+        if (m && dev.hide.indexOf(m.name) >= 0) { o.visible = false; return; }
+        if (!dev.darken) return;
+        // Scocca più scura: meno riflessi, niente effetto "bianco"
+        var mats = Array.isArray(m) ? m : [m];
+        mats.forEach(function (mm) {
+          if (!mm || mm.userData.darkened) return;
+          mm.userData.darkened = true;
+          if (mm.color) { var l = mm.color.r * 0.3 + mm.color.g * 0.59 + mm.color.b * 0.11; if (l > 0.12) mm.color.multiplyScalar(0.32); }
+          mm.envMapIntensity = 0.55;
+        });
+      });
+      // Centra il modello sul pivot
+      var box = new THREE.Box3().setFromObject(model);
+      var center = box.getCenter(new THREE.Vector3());
+      model.position.sub(center);
+      pivot.add(model);
+      pivot.updateMatrixWorld(true);
+      box.setFromObject(model);
+      var size = box.getSize(new THREE.Vector3());
+      var radius = box.getBoundingSphere(new THREE.Sphere()).radius;
+      camera.near = radius * 0.005; camera.far = radius * 200; camera.updateProjectionMatrix();
 
-    drawBg(now, 1 - 0.6 * smooth(0.5, 0.85, pr));
+      // Geometria dello schermo in coordinate del mondo (rotazione 0)
+      var sCenter = new THREE.Vector3(0, 0, 0), u = new THREE.Vector3(1, 0, 0), v = new THREE.Vector3(0, 1, 0), n = new THREE.Vector3(0, 0, 1);
+      var sW = size.x * 0.9, sH = size.y * 0.6;
+      if (screenMesh) {
+        screenMesh.material = new THREE.MeshBasicMaterial({ map: screenTex, toneMapped: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+        var pos = screenMesh.geometry.attributes.position, uvA = screenMesh.geometry.attributes.uv, pts = [], p = new THREE.Vector3(), c = new THREE.Vector3();
+        for (var i = 0; i < pos.count; i++) { p.fromBufferAttribute(pos, i).applyMatrix4(screenMesh.matrixWorld); pts.push(p.clone()); c.add(p); }
+        c.divideScalar(pts.length);
+        var sb = new THREE.Box3().setFromPoints(pts), ext = sb.getSize(new THREE.Vector3());
+        u.set(ext.x >= ext.z ? 1 : 0, 0, ext.x >= ext.z ? 0 : 1);
+        var far = null, best = -1, q = new THREE.Vector3();
+        pts.forEach(function (pt) { q.copy(pt).sub(c); q.addScaledVector(u, -q.dot(u)); if (q.length() > best) { best = q.length(); far = q.clone(); } });
+        v.copy(far).normalize(); if (v.y < 0) v.negate();
+        n.crossVectors(u, v).normalize();
+        var toCenter = n.dot(new THREE.Vector3().sub(c));
+        if ((dev.normalToCenter && toCenter < 0) || (!dev.normalToCenter && toCenter > 0)) { u.negate(); n.negate(); }
+        var minU = Infinity, maxU = -Infinity, minV = Infinity, maxV = -Infinity, cu = 0, cv = 0;
+        pts.forEach(function (pt, idx) {
+          q.copy(pt).sub(c); var a = q.dot(u), b = q.dot(v);
+          minU = Math.min(minU, a); maxU = Math.max(maxU, a); minV = Math.min(minV, b); maxV = Math.max(maxV, b);
+          if (uvA) { cu += a * (uvA.getX(idx) - 0.5); cv += b * (uvA.getY(idx) - 0.5); }
+        });
+        sW = maxU - minU; sH = maxV - minV;
+        sCenter.copy(c).addScaledVector(u, (minU + maxU) / 2).addScaledVector(v, (minV + maxV) / 2);
+        // Orienta il contenuto in base alle UV del modello: niente immagini capovolte o a specchio
+        screenTex.flipY = cv > 0;
+        if (cu < 0) { screenTex.wrapS = THREE.RepeatWrapping; screenTex.repeat.x = -1; screenTex.offset.x = 1; }
+        screenTex.needsUpdate = true;
+      }
+      var front = new THREE.Vector3(n.x, 0, n.z); if (front.lengthSq() < 1e-6) front.set(0, 0, 1); front.normalize();
+      var dir0 = front.clone().multiplyScalar(1).add(new THREE.Vector3(0, 0.42, 0)).normalize();
+      rig = { radius: radius, sCenter: sCenter, sW: sW, sH: sH, n: n, v: v, dir0: dir0, logoFrac: dev.logoFrac };
+      self.setState({ loading: false });
+    }, undefined, function () { if (self.alive && self.scene === scene) self.setState({ loading: false, failed: true }); });
 
-    // 1. Rotazione, poi si ferma di fronte
-    var settle = smooth(0.02, 0.28, pr);
-    if (settle <= 0 && !reduce) angle += dt * CONFIG.spinSpeed * Math.PI / 180 / 1000;
-    qTumble.setFromAxisAngle(spinAxis, angle);
-    pivot.quaternion.copy(qTumble).slerp(qRest, settle);
+    // Loop
+    var angle = 0, last = performance.now(), lastW = 0, lastH = 0, lastLogo = 0, logoFresh = true;
+    var qTumble = new THREE.Quaternion(), qRest = new THREE.Quaternion();
+    // Asse fisso inclinato: rotazione a velocità costante che fa comunque capovolgere il MacBook
+    var spinAxis = new THREE.Vector3(0.55, 1, 0.2).normalize();
+    var tmpDir = new THREE.Vector3(), tmpTarget = new THREE.Vector3(), up0 = new THREE.Vector3(0, 1, 0), tmpUp = new THREE.Vector3();
+    var tick = function (now) {
+      if (!self.alive || self.scene !== scene) return;
+      var dt = Math.min(64, now - last); last = now;
+      var cw = e.canvas.clientWidth, ch = e.canvas.clientHeight;
+      if (cw && ch && (cw !== lastW || ch !== lastH)) { renderer.setSize(cw, ch, false); camera.aspect = cw / ch; camera.updateProjectionMatrix(); lastW = cw; lastH = ch; }
+      var vh = window.innerHeight;
+      var r = e.track.getBoundingClientRect();
+      var pr = clamp(-r.top / Math.max(1, r.height - vh), 0, 1);
 
-    // 2. La telecamera entra nello schermo
-    if (rig) {
-      var t = smooth(0.26, 0.88, pr);
-      var vf = THREE.MathUtils.degToRad(camera.fov), tanV = Math.tan(vf / 2), asp = camera.aspect || 1;
-      var fitAng = Math.min(vf, 2 * Math.atan(tanV * asp));
-      var d0 = rig.radius / Math.sin(fitAng / 2) * 1.32;
-      var lift = 0.22 * d0 * tanV;
-      var dEnd = Math.min(rig.sH / (2 * tanV), rig.sW / (2 * tanV * asp)) * 0.86;
-      var tc = t * t * (3 - 2 * t);
-      tmpTarget.set(0, lift, 0).lerp(rig.sCenter, tc);
-      tmpDir.copy(rig.dir0).lerp(rig.n, tc).normalize();
-      camera.position.copy(tmpTarget).addScaledVector(tmpDir, d0 * Math.pow(dEnd / d0, t));
-      camera.up.copy(tmpUp.copy(up0).lerp(rig.v, tc).normalize());
-      camera.lookAt(tmpTarget);
-    }
-    renderer.render(scene, camera);
+      var thL = self.themeFor(); rim.color.setHex(thL.rim); rim.intensity = thL.rim === 0x536be1 ? 1.6 : 0.9; renderer.toneMappingExposure = thL.exposure;
 
-    // 3. Testi e passaggio "Sei dentro"
-    var h = smooth(0, 0.18, pr);
-    e.heroText.style.opacity = String(1 - h); e.heroText.style.transform = 'translateY(' + (-60 * h) + 'px)';
-    e.hint.style.opacity = String(1 - smooth(0, 0.06, pr));
-    var o = smooth(0.84, 0.93, pr), inS = o > 0.5;
-    e.inside.style.opacity = String(o); e.inside.style.pointerEvents = inS ? 'auto' : 'none';
-    e.header.style.setProperty('--nav-ink', inS ? '#F2F4F7' : TH.ink);
-    e.header.style.setProperty('--nav-link', inS ? '#C9CED8' : TH.navLink);
-    var k = smooth(0.88, 0.99, pr);
-    e.insideInner.style.opacity = String(k); e.insideInner.style.transform = 'translateY(' + (40 * (1 - k)) + 'px)';
-    requestAnimationFrame(tick);
+      // Sfondo
+      drawBg(now, 1 - 0.6 * smooth(0.4, 0.68, pr));
+
+      // 1. Capriole su più assi, poi si ferma di fronte
+      var settle = smooth(0.02, 0.22, pr);
+      var speed = (self.props.spinSpeed != null ? self.props.spinSpeed : 18) * Math.PI / 180 / 1000;
+      if (settle <= 0 && !reduce) angle += dt * speed;
+      qTumble.setFromAxisAngle(spinAxis, angle);
+      pivot.quaternion.copy(qTumble).slerp(qRest, settle);
+
+      // 2. La telecamera entra nello schermo
+      if (rig) {
+        var t = smooth(0.2, 0.7, pr);
+        var vf = THREE.MathUtils.degToRad(camera.fov), tanV = Math.tan(vf / 2), asp = camera.aspect || 1;
+        var fitAng = Math.min(vf, 2 * Math.atan(tanV * asp));
+        var d0 = rig.radius / Math.sin(fitAng / 2) * 1.32;
+        var lift = 0.22 * d0 * tanV;
+        var dEnd = Math.min(rig.sH / (2 * tanV), rig.sW / (2 * tanV * asp)) * 0.86;
+        var tc = t * t * (3 - 2 * t);
+        tmpTarget.set(0, lift, 0).lerp(rig.sCenter, tc);
+        tmpDir.copy(rig.dir0).lerp(rig.n, tc).normalize();
+        var dist = d0 * Math.pow(dEnd / d0, t);
+        camera.position.copy(tmpTarget).addScaledVector(tmpDir, dist);
+        tmpUp.copy(up0).lerp(rig.v, tc).normalize();
+        camera.up.copy(tmpUp);
+        camera.lookAt(tmpTarget);
+      }
+      if (!reduce && now - lastLogo > 33) { drawLogo(now / 1000); drawScreen(); lastLogo = now; logoFresh = true; }
+      renderer.render(scene, camera);
+
+      // 3. Testi
+      if (e.heroText) { var h = smooth(0.0, 0.18, pr); e.heroText.style.opacity = String(1 - h); e.heroText.style.transform = 'translateY(' + (-60 * h) + 'px)'; }
+      if (e.hint) e.hint.style.opacity = String(1 - smooth(0.0, 0.06, pr));
+      if (e.inside) { var o = smooth(0.64, 0.74, pr); e.inside.style.opacity = String(o); e.inside.style.pointerEvents = o > 0.5 ? 'auto' : 'none'; }
+      if (e.insideInner) { var k = smooth(0.8, 0.92, pr); e.insideInner.style.opacity = String(k); e.insideInner.style.transform = 'translateY(' + (40 * (1 - k)) + 'px)'; }
+      // 4. Il logo esce dallo schermo e va in alto a sinistra; poi compare la navbar
+      if (rig && e.floatLogo) {
+        var cr = e.canvas.getBoundingClientRect();
+        var tv = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2), as = camera.aspect || 1;
+        var dE = Math.min(rig.sH / (2 * tv), rig.sW / (2 * tv * as)) * 0.86;
+        var w0 = rig.sW / (2 * dE * tv * as) * cr.width * rig.logoFrac;
+        var x0 = cr.left + cr.width / 2 - w0 / 2, y0 = cr.top + cr.height / 2 - w0 * (268 / 833) / 2;
+        var w1 = 34 * 833 / 268, x1 = Math.max(20, Math.min(56, window.innerWidth * 0.04)), y1 = 19;
+        var mv = smooth(0.72, 0.86, pr);
+        var lx = x0 + (x1 - x0) * mv, ly = y0 + (y1 - y0) * mv, lw = w0 + (w1 - w0) * mv;
+        e.floatLogo.style.transform = 'translate(' + lx.toFixed(2) + 'px,' + ly.toFixed(2) + 'px) scale(' + (lw / 833).toFixed(5) + ')';
+        e.floatLogo.style.opacity = String(smooth(0.68, 0.7, pr));
+        if (e.floatCanvas && logoFresh && pr > 0.6) { var fc = e.floatCanvas.getContext('2d'); fc.clearRect(0, 0, 1666, 536); fc.drawImage(lc, 0, 0); logoFresh = false; }
+        e.floatLogo.style.pointerEvents = mv > 0.99 ? 'auto' : 'none';
+      }
+      if (e.nav) { var nv = smooth(0.82, 0.9, pr); e.nav.style.opacity = String(nv); e.nav.style.pointerEvents = nv > 0.5 ? 'auto' : 'none'; }
+
+      self.raf = requestAnimationFrame(tick);
+    };
+    this.raf = requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
-})();
+
+  themeFor() {
+    var mode = this.props.sfondo || 'orizzonte';
+    var acc = this.props.accent ?? '#6EF2C4';
+    if (mode === 'gradiente') return { isGrad: true, isHorizonTop: false, isHorizonBottom: false, stageBg: '#F7F4EC', ink: '#15161B', navLink: '#3B3E47', kicker: '#15161B', hint: '#4A4E58', hintTrack: 'rgba(21,22,27,0.15)', rim: 0x6ef2c4, exposure: 0.72 };
+    if (mode === 'glifi') return { isGrad: false, isHorizonTop: false, isHorizonBottom: false, stageBg: '#0A0B0F', ink: '#F2F4F7', navLink: '#C9CED8', kicker: acc, hint: '#9AA3B2', hintTrack: 'rgba(242,244,247,0.15)', rim: 0x6ef2c4, exposure: 0.72 };
+    var low = this.props.orizzonte === 'basso';
+    return { isGrad: false, isHorizonTop: !low, isHorizonBottom: low, stageBg: '#000000', ink: '#F2F4F7', navLink: '#C9CED8', kicker: '#B9C5F6', hint: '#A3AAC2', hintTrack: 'rgba(242,244,247,0.15)', rim: 0x536be1, exposure: 0.85 };
+  }
+
+  renderVals() {
+    var self = this;
+    if (!this.refFns) {
+      this.els = this.els || {};
+      var mk = function (name) { return function (el) { self.els[name] = el; }; };
+      this.refFns = {
+        track: mk('track'), nav: mk('nav'), floatLogo: mk('floatLogo'), floatCanvas: mk('floatCanvas'), canvas: mk('canvas'), bg: mk('bg'), heroText: mk('heroText'), hint: mk('hint'),
+        inside: mk('inside'), insideInner: mk('insideInner')
+      };
+    }
+    var st = this.state || {};
+    return {
+      accent: this.props.accent ?? '#6EF2C4',
+      loading: st.loading !== false && !st.failed,
+      failed: !!st.failed,
+      theme: this.themeFor(),
+      refs: this.refFns
+    };
+  }
+}
+
+var hero = new Component(CONFIG);
+function renderHero() {
+  var v = hero.renderVals(), th = v.theme, st = document.documentElement.style;
+  st.setProperty('--accent', v.accent); st.setProperty('--stage-bg', th.stageBg); st.setProperty('--ink', th.ink);
+  st.setProperty('--kicker', th.kicker); st.setProperty('--hint', th.hint); st.setProperty('--hint-track', th.hintTrack);
+  document.querySelectorAll('[data-if]').forEach(function (el) {
+    var k = el.getAttribute('data-if'), on = k in v ? v[k] : th[k];
+    el.style.display = on ? 'contents' : 'none';
+  });
+  return v;
+}
+var v0 = renderHero();
+document.querySelectorAll('[data-ref]').forEach(function (el) { v0.refs[el.getAttribute('data-ref')](el); });
+hero.componentDidMount();
 </script>
 </body>
 </html>
