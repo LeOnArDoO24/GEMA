@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GEMA — Entra nel computer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --accent: #6EF2C4; --ink: #F2F4F7; --nav-ink: #F2F4F7; --nav-link: #C9CED8; --kicker: #B9C5F6; --hint: #A3AAC2; --hint-track: rgba(242,244,247,0.15); --stage-bg: #000; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #0A0B0F; color: #F2F4F7; font-family: Inter, system-ui, sans-serif; }
+  a { color: var(--accent); } a:hover { color: #A8F8DC; }
+  .grid-bg { background-color: #04140F; background-image: linear-gradient(rgba(110,242,196,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(110,242,196,0.07) 1px, transparent 1px); background-size: 56px 56px; }
+  .track { position: relative; height: 3800px; }
+  .stage { position: sticky; top: 0; height: 100vh; overflow: hidden; background: var(--stage-bg); }
+  .layer { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  [hidden] { display: none !important; }
+
+  /* Sfondo "Glow Horizon" */
+  @keyframes ghEnterTop { from { transform: translateY(-100%) scaleY(1.5); opacity: 0; filter: blur(15px) } to { transform: translateY(-50%) scaleY(1); opacity: 1; filter: blur(0) } }
+  @keyframes ghEnterBottom { from { transform: translateY(100%) scaleY(1.5); opacity: 0; filter: blur(15px) } to { transform: translateY(50%) scaleY(1); opacity: 1; filter: blur(0) } }
+  @keyframes ghArcTop { from { transform: translateY(-40%) scale(var(--s)) } to { transform: translateY(0) scale(var(--s)) } }
+  @keyframes ghArcBottom { from { transform: translateY(40%) scale(var(--s)) } to { transform: translateY(0) scale(var(--s)) } }
+  .gh { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+  .gh-wrap { position: absolute; inset: 0; isolation: isolate; }
+  .gh-top .gh-wrap { transform: translateY(-50%); animation: ghEnterTop 2s cubic-bezier(.16,1,.3,1) both; }
+  .gh-bottom .gh-wrap { transform: translateY(50%); animation: ghEnterBottom 2s cubic-bezier(.16,1,.3,1) both; }
+  .gh-top .gh-move { animation: ghArcTop 2s cubic-bezier(.16,1,.3,1) both; }
+  .gh-bottom .gh-move { animation: ghArcBottom 2s cubic-bezier(.16,1,.3,1) both; }
+  .arc { position: absolute; inset: 0; border-radius: 100%; transform: scale(var(--s)); }
+  .arc-white { --s: 1.32; background: #FFFFFF; box-shadow: 0px -4px 23px 0px #ffffffb5; animation-delay: 1.2s; }
+  .gh-bottom .arc-white { box-shadow: 0px 4px 23px 0px #ffffffb5; }
+  .arc-glow { --s: 1.2; background: #536BE1; filter: blur(31px); animation-delay: .6s; }
+  .arc-deep { --s: 1.24; background: #2E43B0; filter: blur(21px); }
+  .arc-black { --s: 1.2; background: #000; filter: blur(51px); }
+
+  /* Sfondo "Glow" (21st.dev Gradient Builder) */
+  .grad { position: absolute; inset: 0; z-index: 0; overflow: hidden; background-color: #F7F4EC;
+    background-image: radial-gradient(100% 50% at 50% 70%, #d8586a 0.0%, #D0384E 20.4%, #E8B5BD 41.1%, #B1C2DE 61.8%, #2C5FB3 82.5%, rgba(44,95,179,0) 85.3%), radial-gradient(42% 19% at 50% 70%, rgba(224,126,140,0.396) 0%, rgba(208,56,78,0.154) 38%, rgba(208,56,78,0) 72%), radial-gradient(53% 29% at 50% 70%, rgba(232,181,189,0.143) 0%, rgba(232,181,189,0) 80%); }
+  .grad svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .21; mix-blend-mode: overlay; }
+
+  header { position: absolute; top: 0; left: 0; right: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 24px clamp(20px, 4vw, 56px); }
+  .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.08em; color: var(--nav-ink); text-decoration: none; }
+  nav { display: flex; gap: 28px; flex-wrap: wrap; font-size: 14px; }
+  nav a { color: var(--nav-link); text-decoration: none; }
+  .hero-text { position: absolute; left: 0; right: 0; top: 12%; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 0 24px; text-align: center; pointer-events: none; }
+  .kicker { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--kicker); }
+  h1 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(40px, 5.4vw, 80px); line-height: .98; letter-spacing: -0.035em; max-width: 20ch; color: var(--ink); }
+  .status { position: absolute; left: 0; right: 0; top: 62%; z-index: 6; margin: 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--hint); }
+  .status.err { color: #FFB86B; text-transform: none; letter-spacing: 0; }
+  .hint { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--hint); }
+  .hint-line { position: relative; display: block; width: 1px; height: 44px; overflow: hidden; background: var(--hint-track); }
+  .hint-line span { position: absolute; inset: 0; background: var(--ink); animation: hintRun 1.6s cubic-bezier(.6,0,.4,1) infinite; }
+  @keyframes hintRun { 0% { transform: translateY(-100%) } 100% { transform: translateY(100%) } }
+  @keyframes caretBlink { 0%,49% { opacity: 1 } 50%,100% { opacity: 0 } }
+  @keyframes loadPulse { 0%,100% { opacity: .35 } 50% { opacity: 1 } }
+  .caret { animation: caretBlink 1s steps(1) infinite; }
+  .load-pulse { animation: loadPulse 1.4s ease-in-out infinite; }
+
+  .inside { position: absolute; inset: 0; z-index: 20; opacity: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; padding: 96px 24px; box-shadow: inset 0 0 220px rgba(110,242,196,0.16); }
+  .inside-inner { display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; max-width: 820px; }
+  .mono { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 16px; color: var(--accent); }
+  h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(56px, 10vw, 148px); line-height: .92; letter-spacing: -0.045em; color: #F2F4F7; }
+  .sub { margin: 0; font-size: clamp(16px, 1.5vw, 20px); line-height: 1.55; color: #B7C2BE; max-width: 52ch; }
+  .ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px; }
+  .btn { display: inline-flex; align-items: center; min-height: 48px; padding: 0 26px; border-radius: 999px; font-weight: 500; font-size: 15px; text-decoration: none; }
+  .btn-primary { background: var(--accent); color: #04140F; }
+  .btn-ghost { border: 1px solid rgba(110,242,196,0.4); color: #E6FBF3; }
+
+  .after { padding: 120px clamp(20px, 5vw, 80px) 48px; }
+  .after-wrap { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+  h3 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(32px, 4vw, 56px); letter-spacing: -0.03em; line-height: 1.02; max-width: 18ch; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .card { display: flex; flex-direction: column; gap: 12px; padding: 28px; border-radius: 14px; border: 1px solid rgba(110,242,196,0.22); background: rgba(4,20,15,0.85); }
+  .card .n { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); }
+  .card h4 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 500; }
+  .card p { margin: 0; font-size: 15px; line-height: 1.6; color: #B7C2BE; }
+  footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid rgba(110,242,196,0.15); font-size: 13px; line-height: 1.6; color: #9AA3B2; }
+  @media (prefers-reduced-motion: reduce) { .caret, .hint-line span, .load-pulse, .gh-wrap, .gh-move { animation: none !important; } }
+</style>
+</head>
+<body>
+  <section class="track" id="track">
+    <div class="stage">
+      <!-- Sfondo "Glow Horizon" -->
+      <div class="gh gh-top" id="bgHorizon" aria-hidden="true">
+        <div class="gh-wrap">
+          <div class="arc arc-white"></div>
+          <div class="arc arc-glow gh-move"></div>
+          <div class="arc arc-deep gh-move"></div>
+          <div class="arc arc-black gh-move"></div>
+        </div>
+      </div>
+      <!-- Sfondo "Glow" -->
+      <div class="grad" id="bgGradient" aria-hidden="true" hidden>
+        <svg aria-hidden="true">
+          <filter id="grain-glow-hero"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+          <rect width="100%" height="100%" filter="url(#grain-glow-hero)"/>
+        </svg>
+      </div>
+      <!-- Sfondo di glifi -->
+      <canvas class="layer" id="bgGlyphs" aria-hidden="true" style="z-index:1"></canvas>
+      <!-- Scena 3D -->
+      <canvas class="layer" id="scene" role="img" aria-label="MacBook 3D che ruota e, scorrendo, si avvicina fino a entrare nello schermo" style="z-index:5"></canvas>
+
+      <p class="status load-pulse" id="loading">Caricamento modello…</p>
+      <p class="status err" id="failed" hidden>Il modello 3D non si è caricato. Ricarica la pagina.</p>
+
+      <header id="header">
+        <a class="logo" href="#dentro">GEMA</a>
+        <nav aria-label="Principale"><a href="#dentro">Progetto</a><a href="#dentro">Studio</a><a href="#dentro">Contatti</a></nav>
+      </header>
+
+      <div class="hero-text" id="heroText">
+        <p class="kicker">Scorri per attraversare il vetro</p>
+        <h1>Il mondo è più grande dentro lo schermo.</h1>
+      </div>
+
+      <div class="hint" id="hint"><span>Scorri</span><span class="hint-line" aria-hidden="true"><span></span></span></div>
+
+      <div class="inside grid-bg" id="inside">
+        <div class="inside-inner" id="insideInner">
+          <p class="mono">~/gema $ benvenuto<span class="caret">▍</span></p>
+          <h2>Sei dentro.</h2>
+          <p class="sub">[UNA FRASE SU COSA TROVA CHI ENTRA IN GEMA]</p>
+          <div class="ctas">
+            <a class="btn btn-primary" href="#dentro">Inizia</a>
+            <a class="btn btn-ghost" href="#dentro">Scopri di più</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="after grid-bg" id="dentro">
+    <div class="after-wrap">
+      <h3>Cosa c'è qui dentro</h3>
+      <div class="cards">
+        <article class="card"><span class="n">01</span><h4>[TITOLO]</h4><p>[DESCRIZIONE BREVE]</p></article>
+        <article class="card"><span class="n">02</span><h4>[TITOLO]</h4><p>[DESCRIZIONE BREVE]</p></article>
+        <article class="card"><span class="n">03</span><h4>[TITOLO]</h4><p>[DESCRIZIONE BREVE]</p></article>
+      </div>
+      <footer>
+        Modello 3D “MacBook Pro M3 16 inch 2024” di <a href="https://sketchfab.com/jackbaeten">jackbaeten</a> su Sketchfab, con licenza <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Modificato: modello compresso e contenuto dello schermo sostituito.
+      </footer>
+    </div>
+  </section>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/GLTFLoader.js"></script>
+<script src="vendor/RoomEnvironment.js"></script>
+<script>
+(function () {
+  // ===== Impostazioni (le stesse dei Tweaks del canvas) =====
+  var CONFIG = {
+    sfondo: 'orizzonte',     // 'orizzonte' | 'gradiente' | 'glifi'
+    orizzonte: 'alto',       // 'alto' | 'basso'
+    accent: '#6EF2C4',       // colore di schermo, bottoni e glifi
+    spinSpeed: 18,           // gradi al secondo
+    modelUrl: 'models/macbook.glb'
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var e = { track: $('track'), canvas: $('scene'), bg: $('bgGlyphs'), header: $('header'), heroText: $('heroText'), hint: $('hint'), inside: $('inside'), insideInner: $('insideInner') };
+
+  function themeFor() {
+    if (CONFIG.sfondo === 'gradiente') return { stageBg: '#F7F4EC', ink: '#15161B', navLink: '#3B3E47', kicker: '#15161B', hint: '#4A4E58', hintTrack: 'rgba(21,22,27,0.15)', rim: 0x6ef2c4, exposure: 0.72 };
+    if (CONFIG.sfondo === 'glifi') return { stageBg: '#0A0B0F', ink: '#F2F4F7', navLink: '#C9CED8', kicker: CONFIG.accent, hint: '#9AA3B2', hintTrack: 'rgba(242,244,247,0.15)', rim: 0x6ef2c4, exposure: 0.72 };
+    return { stageBg: '#000000', ink: '#F2F4F7', navLink: '#C9CED8', kicker: '#B9C5F6', hint: '#A3AAC2', hintTrack: 'rgba(242,244,247,0.15)', rim: 0x536be1, exposure: 0.85 };
+  }
+  var TH = themeFor(), root = document.documentElement.style;
+  root.setProperty('--accent', CONFIG.accent); root.setProperty('--stage-bg', TH.stageBg); root.setProperty('--ink', TH.ink);
+  root.setProperty('--nav-ink', TH.ink); root.setProperty('--nav-link', TH.navLink); root.setProperty('--kicker', TH.kicker);
+  root.setProperty('--hint', TH.hint); root.setProperty('--hint-track', TH.hintTrack);
+  $('bgHorizon').hidden = CONFIG.sfondo !== 'orizzonte';
+  $('bgHorizon').className = 'gh ' + (CONFIG.orizzonte === 'basso' ? 'gh-bottom' : 'gh-top');
+  $('bgGradient').hidden = CONFIG.sfondo !== 'gradiente';
+
+  if (!window.THREE || !THREE.GLTFLoader || !THREE.RoomEnvironment) { $('loading').hidden = true; $('failed').hidden = false; return; }
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  var smooth = function (a, b, v) { var t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+
+  // Renderer, scena, luci
+  var renderer = new THREE.WebGLRenderer({ canvas: e.canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = TH.exposure;
+  var scene = new THREE.Scene();
+  var pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
+  var key = new THREE.DirectionalLight(0xffffff, 0.55); key.position.set(3, 5, 4); scene.add(key);
+  var rim = new THREE.DirectionalLight(TH.rim, TH.rim === 0x536be1 ? 1.6 : 0.9); rim.position.set(-4, 2, -5); scene.add(rim);
+  var camera = new THREE.PerspectiveCamera(32, 1, 0.05, 2000);
+
+  // Sfondo di glifi (solo con sfondo: 'glifi')
+  var bg = e.bg, bctx = bg.getContext('2d');
+  var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&*+=<>/\\|{}[]:;.~^-_?!';
+  var cellW = 14, cellH = 20, cols = 0, rows = 0, glyphs = [], bgW = 0, bgH = 0, bgDpr = 1, trail = [], ripples = [], lastBg = 0;
+  function resizeBg() {
+    var w = bg.clientWidth, h = bg.clientHeight; if (!w || !h) return;
+    bgDpr = Math.min(window.devicePixelRatio || 1, 2);
+    bg.width = Math.round(w * bgDpr); bg.height = Math.round(h * bgDpr); bgW = w; bgH = h;
+    cols = Math.ceil(w / cellW) + 1; rows = Math.ceil(h / cellH) + 1; glyphs = [];
+    for (var i = 0; i < cols * rows; i++) glyphs.push(CHARS[(Math.random() * CHARS.length) | 0]);
+  }
+  if (CONFIG.sfondo === 'glifi') {
+    window.addEventListener('pointermove', function (ev) {
+      var r = bg.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+      if (x < 0 || y < 0 || x > r.width || y > r.height) return;
+      trail.push({ x: x, y: y, life: 1 }); if (trail.length > 28) trail.shift();
+    }, { passive: true });
+    window.addEventListener('pointerdown', function (ev) {
+      var r = bg.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+      if (x < 0 || y < 0 || x > r.width || y > r.height) return;
+      ripples.push({ x: x, y: y, t: 0 }); if (ripples.length > 6) ripples.shift();
+    }, { passive: true });
+  }
+  var hexRgb = function (h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; };
+  function drawBg(now, fade) {
+    if (CONFIG.sfondo !== 'glifi') return;
+    if (bg.clientWidth !== bgW || bg.clientHeight !== bgH) resizeBg();
+    if (!cols) return;
+    var dt = Math.min(100, now - (lastBg || now)); lastBg = now;
+    var ts = now / 1000, rgb = hexRgb(CONFIG.accent), M = Math.max(bgW, bgH);
+    var glows = [
+      { x: bgW * (0.5 + 0.38 * Math.sin(ts * 0.13)), y: bgH * (0.5 + 0.34 * Math.cos(ts * 0.17)), r: M * 0.32 },
+      { x: bgW * (0.5 + 0.42 * Math.cos(ts * 0.09 + 2)), y: bgH * (0.5 + 0.3 * Math.sin(ts * 0.11 + 1)), r: M * 0.26 },
+      { x: bgW * (0.5 + 0.3 * Math.sin(ts * 0.07 + 4)), y: bgH * (0.5 + 0.4 * Math.sin(ts * 0.15 + 3)), r: M * 0.22 }
+    ];
+    trail.forEach(function (p) { p.life -= dt / 700; }); trail = trail.filter(function (p) { return p.life > 0; });
+    ripples.forEach(function (rp) { rp.t += dt / 1000; }); ripples = ripples.filter(function (rp) { return rp.t < 2.4; });
+    var swaps = reduce ? 0 : Math.ceil(cols * rows * 0.004);
+    for (var s = 0; s < swaps; s++) glyphs[(Math.random() * glyphs.length) | 0] = CHARS[(Math.random() * CHARS.length) | 0];
+    bctx.setTransform(bgDpr, 0, 0, bgDpr, 0, 0); bctx.clearRect(0, 0, bgW, bgH);
+    bctx.font = '500 12px "JetBrains Mono", ui-monospace, monospace'; bctx.textAlign = 'center'; bctx.textBaseline = 'middle';
+    for (var j = 0; j < rows; j++) {
+      var cy = j * cellH + cellH / 2;
+      for (var i = 0; i < cols; i++) {
+        var cx = i * cellW + cellW / 2, L = 0.035, k, dx, dy, d2;
+        for (k = 0; k < 3; k++) { dx = cx - glows[k].x; dy = cy - glows[k].y; d2 = (dx * dx + dy * dy) / (glows[k].r * glows[k].r); if (d2 < 1) L += 0.32 * (1 - d2) * (1 - d2); }
+        for (k = 0; k < trail.length; k++) { dx = cx - trail[k].x; dy = cy - trail[k].y; d2 = (dx * dx + dy * dy) / 5600; if (d2 < 1) L += 0.55 * trail[k].life * (1 - d2); }
+        for (k = 0; k < ripples.length; k++) { var rp = ripples[k], dd = Math.sqrt((cx - rp.x) * (cx - rp.x) + (cy - rp.y) * (cy - rp.y)) - rp.t * 520; if (dd > -40 && dd < 40) L += 0.7 * (1 - Math.abs(dd) / 40) * (1 - rp.t / 2.4); }
+        L = Math.min(1, L) * fade; if (L < 0.02) continue;
+        bctx.fillStyle = 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + L.toFixed(3) + ')';
+        bctx.fillText(glyphs[j * cols + i], cx, cy);
+      }
+    }
+  }
+
+  // Contenuto dello schermo del MacBook
+  var sc = document.createElement('canvas'); sc.width = 2048; sc.height = 1320;
+  var ctx = sc.getContext('2d');
+  var screenTex = new THREE.CanvasTexture(sc);
+  screenTex.encoding = THREE.sRGBEncoding; screenTex.flipY = false;
+  screenTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  var caretOn = true;
+  function drawScreen() {
+    var W = sc.width, H = sc.height, acc = CONFIG.accent;
+    ctx.fillStyle = '#04140F'; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(110,242,196,0.08)'; ctx.lineWidth = 2; ctx.beginPath();
+    for (var x = 64; x < W; x += 64) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+    for (var y = 64; y < H; y += 64) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    ctx.stroke();
+    var g = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, W * 0.7);
+    g.addColorStop(0, 'rgba(110,242,196,0)'); g.addColorStop(1, 'rgba(110,242,196,0.16)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#2E4A41';
+    for (var i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(60 + i * 40, 60, 12, 0, Math.PI * 2); ctx.fill(); }
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(110,242,196,0.3)'; ctx.strokeRect(130, 200, 760, 430);
+    ctx.strokeStyle = 'rgba(110,242,196,0.22)'; ctx.strokeRect(W - 740, H - 470, 600, 320);
+    ctx.font = '500 72px "JetBrains Mono", ui-monospace, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.shadowColor = acc; ctx.shadowBlur = 36; ctx.fillStyle = acc;
+    var txt = '~/gema $ entra'; ctx.fillText(txt, W / 2 - 24, H / 2);
+    if (caretOn) { var tw = ctx.measureText(txt).width; ctx.fillRect(W / 2 - 24 + tw / 2 + 8, H / 2 - 40, 34, 80); }
+    ctx.shadowBlur = 0; screenTex.needsUpdate = true;
+  }
+  drawScreen();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawScreen);
+  setInterval(function () { caretOn = !caretOn; drawScreen(); }, 530);
+
+  var pivot = new THREE.Group(); scene.add(pivot);
+  var rig = null;
+
+  new THREE.GLTFLoader().load(CONFIG.modelUrl, function (gltf) {
+    var model = gltf.scene, screenMesh = null;
+    model.traverse(function (o) {
+      if (!o.isMesh) return;
+      var m = o.material;
+      if (m && (m.name === 'sfCQkHOWyrsLmor' || (m.emissiveIntensity && m.emissiveIntensity > 2))) { screenMesh = o; return; }
+      (Array.isArray(m) ? m : [m]).forEach(function (mm) {
+        if (!mm || mm.userData.darkened) return;
+        mm.userData.darkened = true;
+        if (mm.color) { var l = mm.color.r * 0.3 + mm.color.g * 0.59 + mm.color.b * 0.11; if (l > 0.12) mm.color.multiplyScalar(0.32); }
+        mm.envMapIntensity = 0.55;
+      });
+    });
+    var box = new THREE.Box3().setFromObject(model);
+    model.position.sub(box.getCenter(new THREE.Vector3()));
+    pivot.add(model); pivot.updateMatrixWorld(true);
+    box.setFromObject(model);
+    var size = box.getSize(new THREE.Vector3());
+    var radius = box.getBoundingSphere(new THREE.Sphere()).radius;
+
+    var sCenter = new THREE.Vector3(), u = new THREE.Vector3(1, 0, 0), v = new THREE.Vector3(0, 1, 0), n = new THREE.Vector3(0, 0, 1);
+    var sW = size.x * 0.9, sH = size.y * 0.6;
+    if (screenMesh) {
+      screenMesh.material = new THREE.MeshBasicMaterial({ map: screenTex, toneMapped: false, side: THREE.DoubleSide });
+      var pos = screenMesh.geometry.attributes.position, pts = [], p = new THREE.Vector3(), c = new THREE.Vector3();
+      for (var i = 0; i < pos.count; i++) { p.fromBufferAttribute(pos, i).applyMatrix4(screenMesh.matrixWorld); pts.push(p.clone()); c.add(p); }
+      c.divideScalar(pts.length);
+      var ext = new THREE.Box3().setFromPoints(pts).getSize(new THREE.Vector3());
+      u.set(ext.x >= ext.z ? 1 : 0, 0, ext.x >= ext.z ? 0 : 1);
+      var far = null, best = -1, q = new THREE.Vector3();
+      pts.forEach(function (pt) { q.copy(pt).sub(c); q.addScaledVector(u, -q.dot(u)); if (q.length() > best) { best = q.length(); far = q.clone(); } });
+      v.copy(far).normalize(); if (v.y < 0) v.negate();
+      n.crossVectors(u, v).normalize();
+      if (n.dot(new THREE.Vector3().sub(c)) < 0) { u.negate(); n.negate(); }
+      var minU = Infinity, maxU = -Infinity, minV = Infinity, maxV = -Infinity;
+      pts.forEach(function (pt) { q.copy(pt).sub(c); var a = q.dot(u), b = q.dot(v); minU = Math.min(minU, a); maxU = Math.max(maxU, a); minV = Math.min(minV, b); maxV = Math.max(maxV, b); });
+      sW = maxU - minU; sH = maxV - minV;
+      sCenter.copy(c).addScaledVector(u, (minU + maxU) / 2).addScaledVector(v, (minV + maxV) / 2);
+    }
+    var front = new THREE.Vector3(n.x, 0, n.z); if (front.lengthSq() < 1e-6) front.set(0, 0, 1); front.normalize();
+    var dir0 = front.clone().add(new THREE.Vector3(0, 0.42, 0)).normalize();
+    rig = { radius: radius, sCenter: sCenter, sW: sW, sH: sH, n: n, v: v, dir0: dir0 };
+    $('loading').hidden = true;
+  }, undefined, function () { $('loading').hidden = true; $('failed').hidden = false; });
+
+  // Loop
+  var angle = 0, last = performance.now(), lastW = 0, lastH = 0;
+  var qTumble = new THREE.Quaternion(), qRest = new THREE.Quaternion();
+  var spinAxis = new THREE.Vector3(0.55, 1, 0.2).normalize(); // asse inclinato: rotazione costante con capriole
+  var tmpDir = new THREE.Vector3(), tmpTarget = new THREE.Vector3(), up0 = new THREE.Vector3(0, 1, 0), tmpUp = new THREE.Vector3();
+  function tick(now) {
+    var dt = Math.min(64, now - last); last = now;
+    var cw = e.canvas.clientWidth, ch = e.canvas.clientHeight;
+    if (cw && ch && (cw !== lastW || ch !== lastH)) { renderer.setSize(cw, ch, false); camera.aspect = cw / ch; camera.updateProjectionMatrix(); lastW = cw; lastH = ch; }
+    var vh = window.innerHeight, r = e.track.getBoundingClientRect();
+    var pr = clamp(-r.top / Math.max(1, r.height - vh), 0, 1);
+
+    drawBg(now, 1 - 0.6 * smooth(0.5, 0.85, pr));
+
+    // 1. Rotazione, poi si ferma di fronte
+    var settle = smooth(0.02, 0.28, pr);
+    if (settle <= 0 && !reduce) angle += dt * CONFIG.spinSpeed * Math.PI / 180 / 1000;
+    qTumble.setFromAxisAngle(spinAxis, angle);
+    pivot.quaternion.copy(qTumble).slerp(qRest, settle);
+
+    // 2. La telecamera entra nello schermo
+    if (rig) {
+      var t = smooth(0.26, 0.88, pr);
+      var vf = THREE.MathUtils.degToRad(camera.fov), tanV = Math.tan(vf / 2), asp = camera.aspect || 1;
+      var fitAng = Math.min(vf, 2 * Math.atan(tanV * asp));
+      var d0 = rig.radius / Math.sin(fitAng / 2) * 1.32;
+      var lift = 0.22 * d0 * tanV;
+      var dEnd = Math.min(rig.sH / (2 * tanV), rig.sW / (2 * tanV * asp)) * 0.86;
+      var tc = t * t * (3 - 2 * t);
+      tmpTarget.set(0, lift, 0).lerp(rig.sCenter, tc);
+      tmpDir.copy(rig.dir0).lerp(rig.n, tc).normalize();
+      camera.position.copy(tmpTarget).addScaledVector(tmpDir, d0 * Math.pow(dEnd / d0, t));
+      camera.up.copy(tmpUp.copy(up0).lerp(rig.v, tc).normalize());
+      camera.lookAt(tmpTarget);
+    }
+    renderer.render(scene, camera);
+
+    // 3. Testi e passaggio "Sei dentro"
+    var h = smooth(0, 0.18, pr);
+    e.heroText.style.opacity = String(1 - h); e.heroText.style.transform = 'translateY(' + (-60 * h) + 'px)';
+    e.hint.style.opacity = String(1 - smooth(0, 0.06, pr));
+    var o = smooth(0.84, 0.93, pr), inS = o > 0.5;
+    e.inside.style.opacity = String(o); e.inside.style.pointerEvents = inS ? 'auto' : 'none';
+    e.header.style.setProperty('--nav-ink', inS ? '#F2F4F7' : TH.ink);
+    e.header.style.setProperty('--nav-link', inS ? '#C9CED8' : TH.navLink);
+    var k = smooth(0.88, 0.99, pr);
+    e.insideInner.style.opacity = String(k); e.insideInner.style.transform = 'translateY(' + (40 * (1 - k)) + 'px)';
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
