@@ -1,10 +1,32 @@
-# GEMA — Hero "Entra nel computer"
+# GEMA — sito (ramo `sito-semidefinitivo`)
 
-Hero a scorrimento: un MacBook 3D (da telefono, uno smartphone 3D) ruota su sé stesso davanti allo sfondo "Glow Horizon". Sullo schermo c'è il logo GEMA cromato animato. Scorrendo il dispositivo si ferma di fronte, la telecamera entra nello schermo, il logo esce e va in alto a sinistra, compare la navbar e la pagina passa alla scena "Sei dentro.".
+Riproduzione in HTML statico della pagina Figma **"sito definitivo"** (file Gema). Nessuna build: due pagine HTML, un foglio di stile e due script in `assets/`.
+
+## Pagine e sezioni
+
+**`index.html`**
+1. **Hero** — "Non sarai tu a cercare i clienti. Saranno loro a trovare te.", slider "Scorri per l'analisi gratuita" e recensione, su sfondo **Matrix Rain** (vedi sotto). Trascinando il pallino fino in fondo (oppure cliccandolo o premendo Invio) si va ai contatti con "Analisi gratuita" già selezionata.
+2. **Cosa facciamo** — sezione bloccata durante lo scroll: le quattro card (Web, Design, SEO, Care) entrano dal basso e si impilano; titolo e barra di avanzamento cambiano con la card attiva.
+3. **Come lavoriamo** — il "filo conduttore" si disegna con lo scroll e collega le quattro fasi (*In coda* → *In corso* → *Fatto ✓*). Chiude la CTA "Il quinto passo è il tuo."
+4. **Footer**.
+
+**`contatti.html`** — la pagina "Raccontaci il tuo progetto." con il modulo (nome, email, servizi selezionabili tra cui "Altro", messaggio). Si apre sempre dall'inizio, comunque ci arrivi (link, ricarica, tasto indietro). Oltre a nome ed email c'è il campo facoltativo "Il tuo sito attuale". Quando il modulo viene inviato, dal pulsante si apre il pannello blu con "~/gema $ exit — Il prossimo sito che trovano può essere il tuo." e si torna alla home.
+
+Sotto i 900 px le sezioni animate diventano una colonna normale.
+
+## Navbar fissa
+
+In alto nella hero c'è una barra semplice (logo e "Contatti"). Appena si scorre compare la **navbar fissa** con sfondo sfocato: logo, "Cosa facciamo", "Come lavoriamo" (con un pallino sulla sezione in cui ti trovi) e il pulsante "Contattaci". Su `contatti.html` è sempre visibile e ha "← Torna alla home".
+
+## Transizioni tra le pagine
+
+I link con l'attributo `data-to-contact` (pulsanti "Contattaci", "Inizia un progetto", ecc.), lo slider della hero e l'invio del modulo non cambiano pagina di colpo: un cerchio blu si apre dal punto del clic e mostra una scritta ("Raccontaci il tuo progetto.", "Analizziamo il tuo sito." oppure la chiusura "Il prossimo sito che trovano può essere il tuo."), poi si carica la pagina nuova, che parte sempre dall'alto: lì il pannello blu sale e scopre la pagina. Se apri una pagina direttamente, o hai "riduci movimento" attivo nel sistema, si apre senza animazione.
+
+## Footer
+
+Le colonne: presentazione e pulsante "Inizia un progetto", Servizi, Studio, Contatti, Social. Sotto c'è la scritta GEMA grande in trasparenza e la barra con © 2026, P.IVA, privacy, cookie e "Torna su".
 
 ## Come aprirla
-
-Il modello 3D viene caricato con una richiesta di rete, quindi la pagina va servita da un server locale e non aperta con doppio clic:
 
 ```bash
 npx serve .
@@ -12,33 +34,35 @@ npx serve .
 python3 -m http.server
 ```
 
-Poi apri l'indirizzo che compare nel terminale.
+## Sfondo Matrix Rain
 
-## Impostazioni
+La hero usa il porting in JavaScript puro del componente React `MatrixRain` (canvas con colonne di caratteri che scendono, scia, glow e reazione al puntatore). Nell'HTML è il `<div class="matrix" data-matrix>`; sopra c'è il "velo" radiale del Figma che scurisce la zona dei testi.
 
-All'inizio dello script in `index.html` c'è l'oggetto `CONFIG`:
+Colori e intensità sono nell'oggetto `CONFIG_RAIN` all'inizio di `assets/js/home.js`:
 
-| Chiave | Valori | Cosa cambia |
+| Chiave | Valore | Cosa cambia |
 |---|---|---|
-| `sfondo` | `orizzonte`, `gradiente`, `glifi` | Lo sfondo dietro il MacBook |
-| `orizzonte` | `alto`, `basso` | Da dove entra l'arco luminoso |
-| `dispositivo` | `auto`, `computer`, `telefono` | Quale modello mostrare (`auto`: telefono sotto i 768 px) |
-| `accent` | colore hex | Bottoni, scena "Sei dentro" e glifi |
-| `spinSpeed` | gradi al secondo | Velocità di rotazione |
+| `background` | `#141414` | Fondo della hero |
+| `color` | `#536be1` | Colore della scia (blu GEMA) |
+| `highlight` | `#94a6ff` | Carattere in testa alla colonna |
+| `fontSize` | `18` | Dimensione dei caratteri (10–32) |
+| `opacity` | `0.65` | Opacità del canvas: 1 = come il componente originale |
+| `speed`, `density`, `trail`, `glow` | come l'originale | Velocità, fittezza, lunghezza scia, bagliore |
+
+Con "riduci movimento" attivo nel sistema la pioggia resta ferma.
+
+## Da collegare
+
+- Il modulo "Parlaci di te" **non invia ancora nulla**: mostra la conferma e torna alla home. Va agganciato un servizio (es. Formspree) o un endpoint del team in `assets/js/site.js`.
+- Email, telefono e P.IVA sono segnaposto (`ciao@gema.it`, `+39 000 000 0000`, `00000000000`).
+- I link social (Instagram, LinkedIn, Behance) puntano a `#`.
+- Privacy e cookie policy puntano a `#`.
 
 ## File
 
-- `index.html`: pagina, stili e animazione
-- `models/macbook.glb`: MacBook compresso (3,5 MB)
-- `models/phone.glb`: **non è nel repository** (vedi sotto)
-- `vendor/`: three.js r147 con GLTFLoader e RoomEnvironment (licenza MIT, vedi `vendor/THREE-LICENSE`)
-
-## Modello del telefono
-
-Il modello del telefono ha la licenza Sketchfab Standard, che non permette di ridistribuire il file da solo: per questo non è nel repository pubblico (è in `.gitignore`). Scarica "Apple iPhone 18 Pro Max Black 2026" di extraakash da Sketchfab, comprimilo come il MacBook e mettilo in `models/phone.glb` sul server. Senza il file, da telefono compare il messaggio di errore al posto del modello.
-
-## Crediti
-
-- Modello 3D "MacBook Pro M3 16 inch 2024" di [jackbaeten](https://sketchfab.com/jackbaeten) su Sketchfab, con licenza [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Modifiche: modello compresso (quantizzazione e texture WebP) e contenuto dello schermo sostituito.
-- Modello del telefono "Apple iPhone 18 Pro Max Black 2026" di [extraakash](https://sketchfab.com/AakashMansukhani) su Sketchfab, licenza Sketchfab Standard. Il logo Apple sul retro è nascosto.
-- Sfondo "Glow" esportato dal Gradient Builder di 21st.dev. Sfondo "Glow Horizon" ricostruito in CSS dal componente fornito.
+- `index.html`, `contatti.html` — le due pagine
+- `assets/css/gema.css` — tutti gli stili
+- `assets/js/site.js` — comune alle due pagine: navbar fissa, transizione, moduli
+- `assets/js/home.js` — solo home: Matrix Rain, card di "Cosa facciamo", filo di "Come lavoriamo"
+- `assets/illustrazioni/` — le quattro illustrazioni delle card, esportate dal Figma
+- `models/`, `vendor/` — risorse della vecchia hero 3D col MacBook (su `main`), non usate da questa pagina

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contattaci — GEMA</title>
+<meta name="description" content="Raccontaci il tuo progetto: ti rispondiamo entro 24 ore con idee concrete e un preventivo chiaro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/gema.css">
+<!-- La pagina contatti si apre sempre dall'inizio: niente ripristino della posizione di scroll -->
+<script>try{if("scrollRestoration" in history)history.scrollRestoration="manual"}catch(e){}</script>
+<script>try{if(sessionStorage.getItem("gema-pt"))document.documentElement.classList.add("pt-arrive")}catch(e){}</script>
+</head>
+<body id="top" data-scroll-top>
+
+<!-- Pannello della transizione d'ingresso (visibile solo arrivando dal pulsante "Contattaci") -->
+<div class="pt-cover pt-in" aria-hidden="true"><p class="pt-word display">Raccontaci<br><span class="acc">il tuo progetto.</span></p></div>
+
+<header class="topbar show" data-always aria-label="Navigazione">
+  <div class="topbar-in">
+    <a href="index.html" class="logo">GEMA</a>
+    <nav class="topbar-links">
+      <a href="index.html#cosa-facciamo">Cosa facciamo</a>
+      <a href="index.html#come-lavoriamo">Come lavoriamo</a>
+      <a class="back" href="index.html">← Torna alla home</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="contact" aria-labelledby="con-h">
+  <div class="grain"></div>
+  <div class="wrap">
+    <div class="info">
+      <div class="head">
+        <p class="cmd reveal">$ gema --nuovo-progetto</p>
+        <h1 class="display reveal" id="con-h">Raccontaci<br><span class="acc">il tuo progetto.</span></h1>
+        <p class="lead reveal" style="--d:.08s">Compila il modulo: ti rispondiamo entro 24 ore con idee concrete e un preventivo chiaro.</p>
+      </div>
+      <div class="reveal" style="--d:.16s;display:flex;flex-direction:column;gap:16px">
+        <p class="mini">COSA SUCCEDE DOPO</p>
+        <ol class="next">
+          <li><span>01</span>Leggiamo la tua richiesta</li>
+          <li><span>02</span>Ti chiamiamo per una call di 20 minuti</li>
+          <li><span>03</span>Ricevi un preventivo senza impegno</li>
+        </ol>
+      </div>
+      <div class="direct reveal" style="--d:.22s">
+        <div><p class="mini">EMAIL</p><a href="mailto:ciao@gema.it">ciao@gema.it</a></div>
+        <div><p class="mini">TELEFONO</p><a href="tel:+390000000000">+39 000 000 0000</a></div>
+      </div>
+    </div>
+
+    <form class="form-card reveal" style="--d:.12s" data-form="progetto" novalidate>
+      <div class="top"><h2>Parlaci di te</h2><span class="time">~2 min</span></div>
+      <div class="pair">
+        <label class="field"><span>NOME</span><input name="nome" placeholder="Mario Rossi" autocomplete="name" required></label>
+        <label class="field"><span>EMAIL</span><input name="email" type="email" placeholder="mario@studio.it" autocomplete="email" required></label>
+      </div>
+      <label class="field"><span>IL TUO SITO ATTUALE (SE CE L’HAI)</span><input name="sito" placeholder="www.tuo-sito.it" autocomplete="url" inputmode="url"></label>
+      <fieldset class="field">
+        <legend>COSA TI SERVE?</legend>
+        <div class="choice">
+          <button type="button" class="chip" aria-pressed="false" data-analisi><i class="dot"></i>Analisi gratuita</button>
+          <button type="button" class="chip on" aria-pressed="true"><i class="dot on"></i>Sito vetrina</button>
+          <button type="button" class="chip" aria-pressed="false"><i class="dot"></i>Portfolio</button>
+          <button type="button" class="chip" aria-pressed="false"><i class="dot"></i>E-commerce</button>
+          <button type="button" class="chip" aria-pressed="false"><i class="dot"></i>Restyling</button>
+          <button type="button" class="chip" aria-pressed="false"><i class="dot"></i>Altro</button>
+        </div>
+      </fieldset>
+      <label class="field"><span>RACCONTACI LA TUA IDEA</span><textarea name="idea" placeholder="Di cosa ti occupi, cosa vorresti dal sito, eventuali scadenze…"></textarea></label>
+      <button class="btn" type="submit">Invia la richiesta →</button>
+      <p class="foot" aria-live="polite">Rispondiamo entro 24h · I tuoi dati restano tra noi.</p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer class="footer from-light">
+  <div class="grain"></div>
+  <div class="wrap">
+    <div class="fgrid">
+      <div class="fbrand">
+        <a href="index.html#top" class="logo">GEMA</a>
+        <p>Siti su misura, design, SEO e assistenza dopo il lancio. Costruiamo siti che portano i clienti da te.</p>
+        <a class="btn btn-sm" href="#top">Inizia un progetto →</a>
+      </div>
+      <nav class="fcol" aria-label="Servizi">
+        <p class="mini">SERVIZI</p>
+        <a href="index.html#cosa-facciamo">Siti su misura</a>
+        <a href="index.html#cosa-facciamo">Design sul tuo brand</a>
+        <a href="index.html#cosa-facciamo">SEO e visibilità</a>
+        <a href="index.html#cosa-facciamo">Dopo il lancio</a>
+      </nav>
+      <nav class="fcol" aria-label="Studio">
+        <p class="mini">STUDIO</p>
+        <a href="index.html#come-lavoriamo">Come lavoriamo</a>
+        <a href="index.html#top">Analisi gratuita</a>
+        <a href="#top">Contattaci</a>
+      </nav>
+      <div class="fcol">
+        <p class="mini">CONTATTI</p>
+        <a href="mailto:ciao@gema.it">ciao@gema.it</a>
+        <a href="tel:+390000000000">+39 000 000 0000</a>
+        <span>Rispondiamo entro 24 ore</span>
+      </div>
+      <nav class="fcol" aria-label="Social">
+        <p class="mini">SEGUICI</p>
+        <a href="#">Instagram<span class="arr">↗</span></a>
+        <a href="#">LinkedIn<span class="arr">↗</span></a>
+        <a href="#">Behance<span class="arr">↗</span></a>
+      </nav>
+    </div>
+  </div>
+  <p class="fmark" aria-hidden="true">GEMA</p>
+  <div class="bottom">
+    <div class="brand"><span>© 2026 GEMA</span><span>P.IVA 00000000000</span></div>
+    <div class="legal"><a href="#">Privacy policy</a><a href="#">Cookie policy</a><a class="top" href="#top">Torna su ↑</a></div>
+  </div>
+</footer>
+
+<script src="assets/js/site.js"></script>
+</body>
+</html>
