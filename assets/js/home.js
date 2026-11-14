@@ -178,17 +178,27 @@
     return n ? n.offsetHeight + 20 : 28;
   }
 
+  var stage = svc.querySelector('.stage');
+  // telefono in orizzontale: la sezione torna una colonna normale (vedi CSS)
+  var flat = window.matchMedia('(max-width: 900px) and (max-height: 520px)');
+
   function updateServices() {
-    if (mobile.matches) return;
-    var vh = window.innerHeight;
+    if (flat.matches) return;
+    // altezza dello stage (100svh su telefono): non cambia quando compare/sparisce la barra del browser
+    var vh = stage.clientHeight;
     var r = svc.getBoundingClientRect();
     var range = svc.offsetHeight - vh;
     var p = clamp(-r.top / range, 0, 1) * (cards.length - 1); // 0..3
-    var backTop = navOffset(); // sotto la navbar fissa
+    var phone = mobile.matches;
+    // telefono: le card stanno sotto al titolo e sopra alla barra di avanzamento
+    var phoneRest = phone ? title.offsetTop + title.offsetHeight + 20 : 0;
+    var backTop = phone ? phoneRest - 12 : navOffset(); // desktop: sotto la navbar fissa
+    var below = phone ? vh + 40 : vh + 118;
     cards.forEach(function (c, i) {
       var h = c.offsetHeight;
-      var rest = Math.max(backTop + 40, (vh - h) / 2);
-      var below = vh + 118;
+      var rest = phone ? phoneRest : Math.max(backTop + 40, (vh - h) / 2);
+      // se la card non entra nello spazio libero la rimpiccioliamo (telefoni e portatili bassi)
+      var fit = clamp((vh - rest - (phone ? 56 : 24)) / h, phone ? .6 : .7, 1);
       var d = p - i, top, scale = 1, op = 1;
       if (d <= -1) { top = below; }
       else if (d < 0) { top = lerp(below, rest, easeInOut(clamp((d + 1) / .85, 0, 1))); }
@@ -197,6 +207,7 @@
         top = lerp(rest, backTop, k); scale = lerp(1, .92, k); op = lerp(1, .32, k);
       } else if (d < 2) { top = backTop; scale = .92; op = lerp(.32, 0, clamp((d - 1) / .5, 0, 1)); }
       else { top = backTop; scale = .92; op = 0; }
+      scale *= fit;
       c.style.transform = 'translate3d(0,' + top.toFixed(1) + 'px,0) scale(' + scale.toFixed(4) + ')';
       c.style.opacity = op.toFixed(3);
       c.style.visibility = op < .01 ? 'hidden' : 'visible';
@@ -233,8 +244,10 @@
   wire.style.strokeDasharray = total + ' ' + total;
 
   var scale = 1;
+  // sotto i 1100px il filo a zig-zag diventa la linea verticale (vedi CSS)
+  var threadFlat = window.matchMedia('(max-width: 1100px)');
   function layoutThread() {
-    if (mobile.matches) { outer.style.height = ''; return; }
+    if (threadFlat.matches) { outer.style.height = ''; return; }
     scale = Math.min(1, outer.clientWidth / 1316);
     thread.style.transform = 'scale(' + scale + ')';
     outer.style.height = (1740 * scale) + 'px';
@@ -248,13 +261,17 @@
 
   function updateThread() {
     var vh = window.innerHeight;
-    if (mobile.matches) {
+    if (threadFlat.matches) {
+      // la linea verticale si riempie fino al 60% dello schermo; ogni fase si accende quando la linea tocca il suo pallino
+      var line = vh * .6, tr = thread.getBoundingClientRect();
+      var prog = clamp((line - tr.top) / tr.height, 0, 1);
+      thread.style.setProperty('--p', prog.toFixed(4));
+      var end = prog >= 1;
+      var hit = steps.map(function (st) { return st.getBoundingClientRect().top + 41 < line; });
       steps.forEach(function (st, i) {
-        var r = st.getBoundingClientRect();
-        var reached = r.top < vh * .6;
-        var next = steps[i + 1] ? steps[i + 1].getBoundingClientRect().top < vh * .6 : false;
-        stepState(st, reached ? (next ? 'done' : 'active') : 'wait');
+        stepState(st, !hit[i] ? 'wait' : (end || hit[i + 1]) ? 'done' : 'active');
       });
+      cta.classList.toggle('lit', end);
       return;
     }
     var r = thread.getBoundingClientRect();
@@ -283,7 +300,7 @@
   function frame() { ticking = false; updateServices(); updateThread(); }
   function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }
   function onResize() {
-    if (mobile.matches) cards.forEach(function (c) { c.style.transform = ''; c.style.opacity = ''; c.style.visibility = ''; });
+    if (flat.matches) cards.forEach(function (c) { c.style.transform = ''; c.style.opacity = ''; c.style.visibility = ''; });
     layoutThread(); onScroll();
   }
   window.addEventListener('scroll', onScroll, { passive: true });

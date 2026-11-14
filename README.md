@@ -12,11 +12,14 @@ Riproduzione in HTML statico della pagina Figma **"sito definitivo"** (file Gema
 
 **`contatti.html`** — la pagina "Raccontaci il tuo progetto." con il modulo (nome, email, servizi selezionabili tra cui "Altro", messaggio). Si apre sempre dall'inizio, comunque ci arrivi (link, ricarica, tasto indietro). Oltre a nome ed email c'è il campo facoltativo "Il tuo sito attuale". Quando il modulo viene inviato, dal pulsante si apre il pannello blu con "~/gema $ exit — Il prossimo sito che trovano può essere il tuo." e si torna alla home.
 
-Sotto i 900 px le sezioni animate diventano una colonna normale.
+Responsive:
+- **Cosa facciamo** resta bloccata con le card che si impilano anche su telefono (titolo in alto, card a tutta larghezza, avanzamento in fondo). Sui telefoni bassi l'illustrazione sparisce; con il telefono in orizzontale (altezza sotto 520 px) la sezione torna una colonna normale. Se la card non entra in altezza viene rimpicciolita.
+- **Come lavoriamo**: sotto i 1100 px il filo a zig-zag diventa una linea verticale che si riempie con lo scroll e accende un pallino per fase.
+- Hero e sezioni usano `svh`, così la barra del browser su mobile non fa saltare il layout.
 
 ## Navbar fissa
 
-In alto nella hero c'è una barra semplice (logo e "Contatti"). Appena si scorre compare la **navbar fissa** con sfondo sfocato: logo, "Cosa facciamo", "Come lavoriamo" (con un pallino sulla sezione in cui ti trovi) e il pulsante "Contattaci". Su `contatti.html` è sempre visibile e ha "← Torna alla home".
+In alto nella hero c'è una barra semplice (logo e "Contatti"). Appena si scorre compare la **navbar fissa** con sfondo sfocato: logo, "Cosa facciamo", "Come lavoriamo" (con un pallino sulla sezione in cui ti trovi) e il pulsante "Contattaci". Su `contatti.html` è sempre visibile e al posto del pulsante c'è "Contatti", già selezionato (col pallino); si torna alla home dal logo.
 
 ## Transizioni tra le pagine
 

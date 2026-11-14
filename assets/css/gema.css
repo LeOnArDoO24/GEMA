@@ -48,7 +48,7 @@ h1,h2,h3{margin:0;font-weight:700}
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -1.6 1.05'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.07'/></svg>")}
 
 /* ---------- [01] Hero ---------- */
-.hero{position:relative;height:100vh;min-height:760px;background:var(--bg);overflow:hidden}
+.hero{position:relative;height:100vh;height:100svh;min-height:760px;background:var(--bg);overflow:hidden}
 .matrix{position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--bg);pointer-events:none}
 .matrix-canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
 /* Velo: radiale scuro dietro ai testi (dal frame Figma), tiene leggibile la pioggia */
@@ -85,7 +85,7 @@ h1,h2,h3{margin:0;font-weight:700}
 
 /* ---------- [02] Cosa facciamo ---------- */
 .services{position:relative;height:400vh}
-.services .stage{position:sticky;top:0;height:100vh;min-height:700px;overflow:hidden;background:var(--grad-down)}
+.services .stage{position:sticky;top:0;height:100vh;height:100svh;min-height:560px;overflow:hidden;background:var(--grad-down)}
 .services .wrap{height:100%;z-index:2}
 .svc-title{position:absolute;left:var(--pad);top:calc(50% - 78px);width:640px;max-width:44%}
 .svc-title .cmd,.svc-title .line2{display:block;transition:opacity .35s var(--ease),transform .35s var(--ease)}
@@ -155,7 +155,7 @@ h1,h2,h3{margin:0;font-weight:700}
 .cta .btn{width:224px}
 
 /* ---------- [05] Contattaci ---------- */
-.contact{position:relative;background:var(--grad-down);padding:calc(68px + clamp(20px,4.5vh,72px)) 0 227px;min-height:100vh}
+.contact{position:relative;background:var(--grad-down);padding:calc(68px + clamp(20px,4.5vh,72px)) 0 227px;min-height:100vh;min-height:100svh}
 .contact .wrap{align-items:start}
 /* modulo compatto: deve stare tutto nello schermo appena si entra nella pagina */
 .contact .form-card{gap:18px;padding:36px 36px 36px}
@@ -178,7 +178,7 @@ h1,h2,h3{margin:0;font-weight:700}
 .next{display:flex;flex-direction:column;gap:16px;margin:0;padding:0;list-style:none}
 .next li{display:flex;align-items:center;gap:16px;font:400 18px/normal var(--sans);letter-spacing:-.01em;color:rgba(242,244,247,.9)}
 .next li span{font:400 14px/normal var(--mono);letter-spacing:.02em;color:var(--accent)}
-.direct{display:flex;gap:48px}
+.direct{display:flex;flex-wrap:wrap;gap:24px 48px}
 .direct div{display:flex;flex-direction:column;gap:6px}
 .direct a{font:400 20px/normal var(--sans);letter-spacing:-.01em;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(242,244,247,.5)}
 .direct a:hover{text-decoration-color:var(--ink)}
@@ -246,8 +246,7 @@ h1,h2,h3{margin:0;font-weight:700}
 .topbar-links a::after{content:"";position:absolute;left:50%;bottom:-10px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--accent);transform:scale(0);transition:transform .3s var(--ease)}
 .topbar-links a.on::after{transform:scale(1)}
 .topbar .btn{height:42px;padding:0 20px;font-size:15px}
-.topbar .back{font:400 15px/normal var(--sans);color:#c9ced8}
-.topbar .back:hover{color:var(--ink)}
+.topbar-links a.current{cursor:default}
 
 /* ---------- Transizione verso la pagina contatti ---------- */
 .pt-cover{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:0 var(--pad);background:linear-gradient(160deg,#2c46a6 0%,#536be1 100%)}
@@ -276,6 +275,11 @@ html.pt-go .reveal{opacity:1;transform:none;transition:opacity .8s ease calc(.45
   .chips{flex-wrap:wrap}
   .chips .chip{flex:1 0 max-content}
 }
+/* Contatti su portatili da 13": il modulo da 656px fissi lascerebbe ~300px ai testi */
+@media (max-width:1340px){
+  .contact .wrap{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px 48px}
+  .contact h1{font-size:clamp(40px,4vw,76px)}
+}
 @media (max-width:1180px){
   .review{display:none}
   .fgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -283,39 +287,54 @@ html.pt-go .reveal{opacity:1;transform:none;transition:opacity .8s ease calc(.45
   .contact .wrap{grid-template-columns:1fr}
   .form-card{max-width:656px;margin-top:0}
 }
+/* Come lavoriamo: sotto i 1100px il filo a zig-zag verrebbe rimpicciolito troppo (testo a 11-15px),
+   quindi diventa una linea verticale che si disegna con lo scroll */
+@media (max-width:1100px){
+  .thread-outer{margin-top:56px}
+  .thread{width:auto !important;height:auto !important;transform:none !important;display:flex;flex-direction:column;gap:24px;padding-left:28px}
+  .thread::before,.thread::after{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:rgba(242,244,247,.14)}
+  .thread::after{left:7px;width:4px;border-radius:2px;background:var(--accent);transform-origin:top;transform:scaleY(var(--p,0))}
+  .thread svg.path,.thread .node{display:none}
+  .step{position:relative;left:auto !important;top:auto !important;width:auto;max-width:720px;padding:28px 24px}
+  .step::before{content:"";position:absolute;left:-26px;top:34px;width:14px;height:14px;border-radius:50%;background:#141a30;border:2px solid rgba(148,166,255,.5);z-index:1;transition:background .3s,border-color .3s}
+  .step.active::before,.step.done::before{background:var(--accent);border-color:var(--ink)}
+  .step h3{font-size:32px}
+  .step .txt{font-size:17px}
+  .cta{margin-top:72px}
+}
+/* Hero su tablet orizzontale e portatili piccoli: il titolo va su più righe,
+   quindi i testi stanno in una colonna centrata invece che in posizione fissa */
+@media (min-width:901px) and (max-width:1100px){
+  .hero{display:flex;height:auto;min-height:100vh;min-height:100svh}
+  .hero .wrap{flex:1;width:100%;height:auto;display:flex;flex-direction:column;justify-content:center;padding-top:110px;padding-bottom:180px}
+  .hero-content{position:static}
+}
 /* ---------- telefono e tablet stretti ---------- */
 @media (max-width:900px){
-  .hero{height:auto;min-height:100vh;padding:150px 0 120px}
+  .hero{height:auto;min-height:100vh;min-height:100svh;padding:150px 0 120px}
   .hero .wrap{height:auto}
   .hero-content{position:static}
         .scroll-hint{display:none}
   .slide-label{font-size:14px;white-space:nowrap;padding-left:60px}
   .br-lg{display:none}
-  .services{height:auto}
-  .services .stage{position:relative;height:auto;min-height:0;padding:110px 0 120px}
-  .services .wrap{height:auto}
-  .svc-title,.progress{position:static}
-  .svc-title{max-width:none;width:auto}
-  .svc-title .cmd,.svc-title .line2{display:none}
-  .svc-title h2{margin:0 0 48px}
-  .svc-title h2 .dim{color:var(--ink)}
-  .progress{display:none}
-  .svc-card{position:relative;right:auto;width:auto;max-width:none;transform:none !important;opacity:1 !important;top:auto !important;margin-bottom:40px}
-  .svc-head{display:block;margin-bottom:16px}
-  .svc-head .cmd{display:block;margin-bottom:8px}
-  .svc-head h3{font:700 32px/1 var(--display);letter-spacing:-.04em}
-  .card{padding:28px 22px 30px;gap:28px}
-  .card .desc{font-size:20px}
-  .chips{flex-wrap:wrap}
-  .chips .chip{flex:1 1 auto}
-  .thread-outer{margin-top:56px}
-  .thread{width:auto !important;height:auto !important;transform:none !important;display:flex;flex-direction:column;gap:24px;padding-left:28px}
-  .thread::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:rgba(242,244,247,.14)}
-  .thread svg.path,.thread .node{display:none}
-  .step{position:relative;left:auto !important;top:auto !important;width:auto;padding:28px 24px}
-  .step h3{font-size:32px}
-  .step .txt{font-size:17px}
-  .cta{margin-top:72px}
+  /* Cosa facciamo: anche su telefono la sezione resta bloccata e le card si impilano,
+     con titolo in alto, card a tutta larghezza sotto e barra di avanzamento in fondo */
+  .services{height:300vh;height:300svh}
+  .services .stage{height:100vh;height:100svh;min-height:0}
+  .svc-title{top:84px;left:var(--pad);right:var(--pad);width:auto;max-width:none}
+  .svc-title .cmd{font-size:14px}
+  .svc-title h2{margin-top:10px;font-size:clamp(24px,7vw,36px)}
+  .progress{bottom:22px;gap:14px;font-size:12px}
+  .progress .bars i{width:24px}
+  .svc-card{left:var(--pad);right:var(--pad);width:auto;max-width:none}
+  .card{padding:22px 20px 24px;gap:18px;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
+  .card .visual{gap:10px}
+  .card .visual img{max-height:17vh;max-height:17svh;object-fit:contain;object-position:left center}
+  .card .desc{font-size:17px}
+  .card .incl{gap:10px}
+  .card .incl p{font-size:12px}
+  .chips{flex-wrap:wrap;gap:8px}
+  .chips .chip{flex:1 1 auto;padding:10px 12px;gap:8px;font-size:14px}
   .contact{padding-bottom:140px}
   .form-card{padding:28px 22px}
   .form-card .pair{flex-direction:column}
@@ -326,11 +345,34 @@ html.pt-go .reveal{opacity:1;transform:none;transition:opacity .8s ease calc(.45
   .fbrand{grid-column:1/-1}
   .fmark{margin-top:64px}
   .bottom{flex-direction:column;align-items:flex-start;gap:16px}
-  .topbar-links a:not(.btn):not(.back){display:none}
+  .topbar-links a:not(.btn):not(.current){display:none}
   .topbar-in{height:60px}
   .contact{padding-top:120px}
   .bottom .legal{flex-wrap:wrap;gap:12px 20px}
   .direct{flex-wrap:wrap;gap:24px}
+}
+/* telefoni molto stretti (320px): la scritta dello slider non deve finire sotto il pallino */
+@media (max-width:360px){
+  .slide-label{font-size:12px;padding-left:58px}
+}
+/* telefoni bassi: via l'illustrazione, così la card entra nello schermo */
+@media (max-width:900px) and (max-height:700px){
+  .card .visual img{display:none}
+}
+/* telefono in orizzontale: troppo basso per la sezione bloccata, torna una colonna normale */
+@media (max-width:900px) and (max-height:520px){
+  .services{height:auto}
+  .services .stage{position:relative;height:auto;padding:110px 0 120px}
+  .services .wrap{height:auto}
+  .svc-title,.progress{position:static}
+  .svc-title .cmd,.svc-title .line2{display:none}
+  .svc-title h2{margin:0 0 48px}
+  .svc-title h2 .dim{color:var(--ink)}
+  .progress{display:none}
+  .svc-card{position:relative;left:auto;right:auto;transform:none !important;opacity:1 !important;visibility:visible !important;margin-bottom:40px}
+  .svc-head{display:block;margin-bottom:16px}
+  .svc-head .cmd{display:block;margin-bottom:8px}
+  .svc-head h3{font:700 32px/1 var(--display);letter-spacing:-.04em}
 }
 @media (prefers-reduced-motion:reduce){
   .node.active .halo{animation:none}
