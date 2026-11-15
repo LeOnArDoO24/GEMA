@@ -77,11 +77,6 @@ h1,h2,h3{margin:0;font-weight:700}
 .slide-knob:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .slide.done .slide-knob{background:#fff;color:var(--btn)}
 .scroll-hint{position:absolute;left:var(--pad);bottom:104px;display:flex;align-items:center;gap:20px;font:400 14px/normal var(--mono);color:var(--ink-70)}
-.review{position:absolute;right:var(--pad);bottom:103px;width:380px;display:flex;flex-direction:column;gap:16px;padding:24px 28px;border:1px solid rgba(242,244,247,.14);border-radius:24px;background:rgba(20,20,20,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.review .cmd{font-size:13px;letter-spacing:.02em}
-.review blockquote{margin:0;font:400 21px/1.35 var(--sans);letter-spacing:-.01em}
-.review .who{display:flex;align-items:center;justify-content:space-between;gap:12px;font:400 15px/normal var(--sans);color:var(--ink-70)}
-.review .stars{color:var(--accent)}
 
 /* ---------- [02] Cosa facciamo ---------- */
 .services{position:relative;height:400vh}
@@ -212,14 +207,14 @@ h1,h2,h3{margin:0;font-weight:700}
 .closing .cmd{color:var(--ink)}
 .closing h2{font-size:clamp(36px,4.76vw,72px);letter-spacing:-.04em}
 .closing .btn{height:64px;padding:0 36px;font-size:20px}
-.fgrid{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(4,minmax(0,1fr));gap:48px 40px;padding-top:56px}
+.fgrid{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr));gap:48px 40px;padding-top:56px}
 .fbrand{display:flex;flex-direction:column;align-items:flex-start;gap:20px;max-width:360px}
 .fbrand .logo{font:700 28px/1 var(--display);letter-spacing:.08em}
 .fbrand p{font:400 17px/1.5 var(--sans);color:var(--ink-70)}
 .btn-sm{height:48px;padding:0 24px;font-size:17px}
 .fcol{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
 .fcol .mini{margin-bottom:6px}
-.fcol a,.fcol span{font:400 17px/1.3 var(--sans);letter-spacing:-.01em;color:rgba(242,244,247,.88);transition:color .2s}
+.fcol a,.fcol span{overflow-wrap:anywhere;font:400 17px/1.3 var(--sans);letter-spacing:-.01em;color:rgba(242,244,247,.88);transition:color .2s}
 .fcol span{color:var(--ink-70);font-size:15px}
 .fcol a:hover{color:#fff}
 .fcol a .arr{display:inline-block;margin-left:4px;color:var(--accent);transition:transform .2s var(--ease)}
@@ -281,8 +276,7 @@ html.pt-go .reveal{opacity:1;transform:none;transition:opacity .8s ease calc(.45
   .contact h1{font-size:clamp(40px,4vw,76px)}
 }
 @media (max-width:1180px){
-  .review{display:none}
-  .fgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .fgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .fbrand{grid-column:1/-1;max-width:520px}
   .contact .wrap{grid-template-columns:1fr}
   .form-card{max-width:656px;margin-top:0}
@@ -342,6 +336,7 @@ html.pt-go .reveal{opacity:1;transform:none;transition:opacity .8s ease calc(.45
   .footer{padding-top:110px}
   .closing{margin-bottom:96px}
   .fgrid{grid-template-columns:1fr 1fr;gap:40px 24px}
+  .fcontact{grid-column:1/-1}
   .fbrand{grid-column:1/-1}
   .fmark{margin-top:64px}
   .bottom{flex-direction:column;align-items:flex-start;gap:16px}

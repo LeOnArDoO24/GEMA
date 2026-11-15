@@ -5,7 +5,7 @@ Riproduzione in HTML statico della pagina Figma **"sito definitivo"** (file Gema
 ## Pagine e sezioni
 
 **`index.html`**
-1. **Hero** — "Non sarai tu a cercare i clienti. Saranno loro a trovare te.", slider "Scorri per l'analisi gratuita" e recensione, su sfondo **Matrix Rain** (vedi sotto). Trascinando il pallino fino in fondo (oppure cliccandolo o premendo Invio) si va ai contatti con "Analisi gratuita" già selezionata.
+1. **Hero** — "Non sarai tu a cercare i clienti. Saranno loro a trovare te.", slider "Scorri per l'analisi gratuita", su sfondo **Matrix Rain** (vedi sotto). Trascinando il pallino fino in fondo (oppure cliccandolo o premendo Invio) si va ai contatti con "Analisi gratuita" già selezionata.
 2. **Cosa facciamo** — sezione bloccata durante lo scroll: le quattro card (Web, Design, SEO, Care) entrano dal basso e si impilano; titolo e barra di avanzamento cambiano con la card attiva.
 3. **Come lavoriamo** — il "filo conduttore" si disegna con lo scroll e collega le quattro fasi (*In coda* → *In corso* → *Fatto ✓*). Chiude la CTA "Il quinto passo è il tuo."
 4. **Footer**.
@@ -27,7 +27,7 @@ I link con l'attributo `data-to-contact` (pulsanti "Contattaci", "Inizia un prog
 
 ## Footer
 
-Le colonne: presentazione e pulsante "Inizia un progetto", Servizi, Studio, Contatti, Social. Sotto c'è la scritta GEMA grande in trasparenza e la barra con © 2026, P.IVA, privacy, cookie e "Torna su".
+Le colonne: presentazione e pulsante "Inizia un progetto", Servizi, Studio, Contatti. Sotto c'è la scritta GEMA grande in trasparenza e la barra con © 2026, P.IVA, privacy, cookie e "Torna su".
 
 ## Come aprirla
 
@@ -57,8 +57,9 @@ Con "riduci movimento" attivo nel sistema la pioggia resta ferma.
 ## Da collegare
 
 - Il modulo "Parlaci di te" **non invia ancora nulla**: mostra la conferma e torna alla home. Va agganciato un servizio (es. Formspree) o un endpoint del team in `assets/js/site.js`.
-- Email, telefono e P.IVA sono segnaposto (`ciao@gema.it`, `+39 000 000 0000`, `00000000000`).
-- I link social (Instagram, LinkedIn, Behance) puntano a `#`.
+- Contatti: `gema.studio.milano@gmail.com`, `+39 389 766 5209`.
+- Social e P.IVA tolti per ora (si rimettono quando ci sono).
+- Recensione finta della hero tolta: si aggiungeranno quelle vere.
 - Privacy e cookie policy puntano a `#`.
 
 ## File
